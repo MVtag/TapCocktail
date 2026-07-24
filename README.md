@@ -1,47 +1,78 @@
 # 🍹 TapCocktail
 
-**TapCocktail** is a custom Home Assistant integration for managing cocktails served from draft taps and Cornelius kegs.
+**TapCocktail** is a custom Home Assistant integration for managing cocktails, mocktails, lemonades and other drinks served from draft taps and Cornelius kegs.
 
-Assign cocktails to individual taps, load recipes from JSON files, and display beautiful dashboards with serving information such as carbonation, temperature, alcohol content, glass recommendations and more.
-
----
+Create and maintain recipes directly from the Home Assistant UI, assign a drink to each tap, track carbonation and expose recipe data to dashboards and automations.
 
 ## ✨ Features
 
-- 🍸 Assign cocktails to each tap
-- 📂 Load cocktails from JSON files
-- 🫧 Display carbonation (Vol. CO₂)
-- 🌡️ Recommended serving temperature
-- 🥃 Alcohol percentage (ABV)
-- 🍹 Glass recommendations
-- 💡 Serving tips
-- 🎨 Cocktail colors and icons
-- 🔄 Automatic reload when cocktail files are updated
-- 🏠 Native Home Assistant entities
-- 📊 Dashboard friendly sensors
+- 🍸 Manage recipes from **Settings → Devices & services → TapCocktail → Configure**
+- ➕ Create, edit and delete drinks without editing JSON manually
+- 🚰 Configure between **1 and 8 taps**
+- 🗂️ Organize recipes in categories such as cocktails, mocktails and lemonades
+- 🧾 Store between **1 and 12 ingredients** per recipe
+- ⚖️ Calculate ingredient quantities for a glass, 2-litre keg and 9-litre keg
+- 🎨 Built-in drink themes with matching icons and colours
+- 🌈 Optional custom icon and colour for each recipe
+- 🫧 Store recommended carbonation in Vol. CO₂
+- 🌡️ Store serving temperature, ABV, glass type and serving tips
+- 🔄 Automatically reload recipes when files are updated
+- 💾 Restore tap selections and carbonation state after Home Assistant restarts
+- 🇩🇰 Danish and 🇬🇧 English translations
+- 📊 Home Assistant sensors, selects and buttons for dashboards and automations
 
----
+## 🚰 Tap management
 
-## 📸 Preview
+Each configured tap provides:
 
-*Screenshots coming soon.*
+- A drink selector
+- A carbonation duration selector: **2, 24 or 48 hours**
+- Start and stop carbonation buttons
+- Current tap status: `idle`, `carbonating` or `ready`
+- Carbonation progress in percent
+- Remaining carbonation time
+- Expected finish time
+- The time the drink became ready
+- Recipe attributes including ingredients, ABV, CO₂, temperature, colour, icon and serving tips
 
----
+The number of taps can be changed later from the TapCocktail integration options.
 
 ## 📦 Installation
 
-### Manual
+### Manual installation
 
-1. Copy the `custom_components/tapcocktail` folder into your Home Assistant `custom_components` directory.
-2. Restart Home Assistant.
-3. Go to **Settings → Devices & Services**.
-4. Add the **TapCocktail** integration.
+1. Download or clone this repository.
+2. Copy `custom_components/tapcocktail` to:
+   ```text
+   /config/custom_components/tapcocktail
+   ```
+3. Restart Home Assistant.
+4. Open **Settings → Devices & services**.
+5. Select **Add integration** and search for **TapCocktail**.
 
----
+### HACS
 
-## 🍸 Cocktail Library
+The repository contains the required HACS structure. A public HACS release and installation guide are planned.
 
-Cocktails are stored as simple JSON files, making it easy to add or edit recipes.
+## ⚙️ Configuration
+
+After adding the integration:
+
+1. Choose how many taps you want to manage.
+2. Open **TapCocktail → Configure**.
+3. Create your first recipe or manage existing recipes.
+4. Select a recipe and carbonation duration for each tap.
+5. Press the start button when carbonation begins.
+
+## 🍸 Cocktail library
+
+Recipes are stored as JSON files under:
+
+```text
+/config/cocktails/<category>/
+```
+
+Files created through the Home Assistant UI are saved automatically. They can also be edited manually.
 
 Example:
 
@@ -49,37 +80,57 @@ Example:
 {
   "id": "gin_hass",
   "navn": "Gin Hass",
-  "kategori": "Cocktail",
-  "ikon": "🍹",
-  "abv": 8,
+  "kategori": "cocktails",
+  "tema": "tropisk",
+  "ikon": "🥭",
+  "farve": "#FFB000",
+  "abv": 8.0,
   "co2": 2.3,
-  "temperatur": 3,
-  "glas": "Highball"
+  "temperatur": 3.0,
+  "glas": "Highball",
+  "ingredienser": [
+    {
+      "navn": "Gin",
+      "glas": "4 cl",
+      "2_liter": "40 cl",
+      "9_liter": "180 cl"
+    }
+  ],
+  "serveringstips": "Serve ice cold over plenty of ice."
 }
 ```
 
----
+## 🏠 Home Assistant entities
 
-## 🚀 Planned Features
+TapCocktail creates a library sensor and the following entities for every enabled tap:
 
-- HACS support
+- Drink selection
+- Carbonation duration
+- Start and stop buttons
+- Selected drink sensor
+- Status sensor
+- Progress sensor
+- Remaining-time sensor
+- Finish-time sensor
+- Ready-since sensor
+
+These entities can be used with standard Home Assistant cards, custom cards, scripts and automations.
+
+## 🗺️ Planned features
+
+- HACS release and update support
 - Keg pressure monitoring
-- Temperature sensors
-- Remaining volume estimation
-- Cocktail statistics
-- Multiple taps
-- Dashboard cards
-
----
+- Temperature sensor support
+- Remaining keg-volume estimation
+- Drink and serving statistics
+- Ready-to-use dashboard cards
 
 ## ❤️ Contributing
 
-Ideas, bug reports and pull requests are always welcome.
-
----
+Ideas, bug reports and pull requests are welcome.
 
 ## 🍻 About
 
-TapCocktail was created for Home Assistant users who enjoy serving professional-quality cocktails from Cornelius kegs and draft systems.
+TapCocktail was created for Home Assistant users who enjoy serving professional-quality drinks from Cornelius kegs and draft systems.
 
 Cheers! 🍹
