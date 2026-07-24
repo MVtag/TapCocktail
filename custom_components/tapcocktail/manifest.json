@@ -1,0 +1,11 @@
+{
+  "domain": "tapcocktail",
+  "name": "TapCocktail",
+  "version": "1.6.0",
+  "config_flow": true,
+  "documentation": "https://github.com/MVtag/TapCocktail",
+  "requirements": [],
+  "codeowners": [
+    "@MVtag"
+  ]
+}

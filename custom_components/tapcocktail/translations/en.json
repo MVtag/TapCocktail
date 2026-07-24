@@ -1,0 +1,175 @@
+{
+  "title": "TapCocktail",
+  "config": {
+    "step": {
+      "user": {
+        "title": "TapCocktail",
+        "description": "Tilføj TapCocktail og vælg antal aktive haner.",
+        "data": {
+          "max_taps": "Antal haner"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "TapCocktail",
+        "menu_options": {
+          "settings": "Indstillinger",
+          "create_cocktail": "Opret cocktail",
+          "edit_cocktail": "Rediger cocktail",
+          "delete_cocktail": "Slet cocktail"
+        }
+      },
+      "settings": {
+        "title": "Antal haner",
+        "description": "Ændr antallet af aktive haner.",
+        "data": {
+          "max_taps": "Antal aktive haner"
+        }
+      },
+      "create_cocktail": {
+        "title": "Number of ingredients",
+        "description": "Choose the number of ingredients and cocktail theme. The theme color appears automatically on the next page.",
+        "data": {
+          "ingredient_count": "Number of ingredients",
+          "tema": "Cocktail theme"
+        }
+      },
+      "edit_cocktail": {
+        "title": "Vælg cocktail",
+        "description": "Vælg den cocktail, du vil redigere.",
+        "data": {
+          "cocktail_id": "Cocktail"
+        }
+      },
+      "edit_cocktail_form": {
+        "title": "Rediger cocktail",
+        "description": "Fill in every ingredient in the selected source column. TapCocktail then calculates missing 2 and 9 liter amounts and validates the totals.",
+        "data": {
+          "id": "ID",
+          "navn": "Navn",
+          "kategori": "Kategori",
+          "ny_kategori": "Ny kategori (valgfrit)",
+          "tema": "Cocktailtema",
+          "ikon_override": "Eget ikon/emoji (valgfrit)",
+          "abv": "ABV",
+          "co2": "CO₂",
+          "temperatur": "Temperatur",
+          "glas": "Glastype",
+          "fremgangsmaade": "Fremgangsmåde",
+          "pynt": "Pynt/garnish",
+          "noter": "Noter",
+          "karboneringstid_timer": "Standard karboneringstid",
+          "serveringstips": "Serveringstips",
+          "brugerdefineret_farve_rgb": "Custom color",
+          "ingrediens_1_navn": "Ingredient 1 – name",
+          "ingrediens_1_glas": "Ingredient 1 – per glass",
+          "ingrediens_1_2l": "Ingredient 1 – 2 liters",
+          "ingrediens_1_9l": "Ingredient 1 – 9 liters",
+          "ingrediens_2_navn": "Ingredient 2 – name",
+          "ingrediens_2_glas": "Ingredient 2 – per glass",
+          "ingrediens_2_2l": "Ingredient 2 – 2 liters",
+          "ingrediens_2_9l": "Ingredient 2 – 9 liters",
+          "ingrediens_3_navn": "Ingredient 3 – name",
+          "ingrediens_3_glas": "Ingredient 3 – per glass",
+          "ingrediens_3_2l": "Ingredient 3 – 2 liters",
+          "ingrediens_3_9l": "Ingredient 3 – 9 liters",
+          "ingrediens_4_navn": "Ingredient 4 – name",
+          "ingrediens_4_glas": "Ingredient 4 – per glass",
+          "ingrediens_4_2l": "Ingredient 4 – 2 liters",
+          "ingrediens_4_9l": "Ingredient 4 – 9 liters",
+          "ingrediens_5_navn": "Ingredient 5 – name",
+          "ingrediens_5_glas": "Ingredient 5 – per glass",
+          "ingrediens_5_2l": "Ingredient 5 – 2 liters",
+          "ingrediens_5_9l": "Ingredient 5 – 9 liters",
+          "ingrediens_6_navn": "Ingredient 6 – name",
+          "ingrediens_6_glas": "Ingredient 6 – per glass",
+          "ingrediens_6_2l": "Ingredient 6 – 2 liters",
+          "ingrediens_6_9l": "Ingredient 6 – 9 liters",
+          "brug_tema_farve": "Use the theme's default color",
+          "automatisk_beregning": "Automatically calculate 2 and 9 liters",
+          "beregn_fra": "Calculate from"
+        }
+      },
+      "delete_cocktail": {
+        "title": "Slet cocktail",
+        "description": "Vælg cocktailen og bekræft permanent sletning.",
+        "data": {
+          "cocktail_id": "Cocktail",
+          "confirm_delete": "Jeg bekræfter, at cocktailen skal slettes"
+        }
+      },
+      "create_cocktail_form": {
+        "title": "Create cocktail",
+        "description": "Fill in every ingredient in the selected source column. TapCocktail then calculates missing 2 and 9 liter amounts and validates the totals.",
+        "data": {
+          "id": "ID",
+          "navn": "Navn",
+          "kategori": "Kategori",
+          "ny_kategori": "Ny kategori (valgfrit)",
+          "tema": "Cocktailtema",
+          "ikon_override": "Eget ikon/emoji (valgfrit)",
+          "abv": "ABV",
+          "co2": "CO₂",
+          "temperatur": "Temperatur",
+          "glas": "Glastype",
+          "fremgangsmaade": "Fremgangsmåde",
+          "pynt": "Pynt/garnish",
+          "noter": "Noter",
+          "karboneringstid_timer": "Standard karboneringstid",
+          "serveringstips": "Serveringstips",
+          "brugerdefineret_farve_rgb": "Custom color",
+          "ingrediens_1_navn": "Ingredient 1 – name",
+          "ingrediens_1_glas": "Ingredient 1 – per glass",
+          "ingrediens_1_2l": "Ingredient 1 – 2 liters",
+          "ingrediens_1_9l": "Ingredient 1 – 9 liters",
+          "ingrediens_2_navn": "Ingredient 2 – name",
+          "ingrediens_2_glas": "Ingredient 2 – per glass",
+          "ingrediens_2_2l": "Ingredient 2 – 2 liters",
+          "ingrediens_2_9l": "Ingredient 2 – 9 liters",
+          "ingrediens_3_navn": "Ingredient 3 – name",
+          "ingrediens_3_glas": "Ingredient 3 – per glass",
+          "ingrediens_3_2l": "Ingredient 3 – 2 liters",
+          "ingrediens_3_9l": "Ingredient 3 – 9 liters",
+          "ingrediens_4_navn": "Ingredient 4 – name",
+          "ingrediens_4_glas": "Ingredient 4 – per glass",
+          "ingrediens_4_2l": "Ingredient 4 – 2 liters",
+          "ingrediens_4_9l": "Ingredient 4 – 9 liters",
+          "ingrediens_5_navn": "Ingredient 5 – name",
+          "ingrediens_5_glas": "Ingredient 5 – per glass",
+          "ingrediens_5_2l": "Ingredient 5 – 2 liters",
+          "ingrediens_5_9l": "Ingredient 5 – 9 liters",
+          "ingrediens_6_navn": "Ingredient 6 – name",
+          "ingrediens_6_glas": "Ingredient 6 – per glass",
+          "ingrediens_6_2l": "Ingredient 6 – 2 liters",
+          "ingrediens_6_9l": "Ingredient 6 – 9 liters",
+          "brug_tema_farve": "Use the theme's default color",
+          "automatisk_beregning": "Automatically calculate 2 and 9 liters",
+          "beregn_fra": "Calculate from"
+        }
+      },
+      "edit_ingredient_count": {
+        "title": "Number of ingredients",
+        "description": "Choose the number of ingredients and cocktail theme. The theme color appears automatically on the next page.",
+        "data": {
+          "ingredient_count": "Number of ingredients",
+          "tema": "Cocktail theme"
+        }
+      }
+    },
+    "error": {
+      "cocktail_validation": "{error}",
+      "confirmation_required": "Du skal bekræfte sletningen."
+    },
+    "abort": {
+      "settings_saved": "Indstillingerne er gemt.",
+      "cocktail_created": "{name} er oprettet.",
+      "cocktail_updated": "{name} er opdateret.",
+      "cocktail_deleted": "{name} er slettet.",
+      "cocktail_not_found": "Cocktailen blev ikke fundet.",
+      "no_cocktails": "Der er ingen cocktails at vælge."
+    }
+  }
+}
