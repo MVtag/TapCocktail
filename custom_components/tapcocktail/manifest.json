@@ -1,13 +1,13 @@
 {
   "domain": "tapcocktail",
   "name": "TapCocktail",
-  "version": "1.6.0",
-  "config_flow": true,
-  "documentation": "https://github.com/MVtag/TapCocktail",
-  "issue_tracker": "https://github.com/MVtag/TapCocktail/issues",
-  "iot_class": "calculated",
-  "requirements": [],
   "codeowners": [
     "@MVtag"
-  ]
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/MVtag/TapCocktail",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/MVtag/TapCocktail/issues",
+  "requirements": [],
+  "version": "1.6.0"
 }
