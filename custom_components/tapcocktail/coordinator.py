@@ -164,8 +164,6 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
             _load_cocktails_sync,
             COCKTAIL_PATH,
         )
-        self._sync_selected_cocktails()
-
         self.carbonation.tick()
 
         if self._taps_dirty:
@@ -173,32 +171,6 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
             self._taps_dirty = False
 
         return cocktails
-
-    def _sync_selected_cocktails(self) -> None:
-        """Synchronise active taps with the integration-owned selects.
-
-        Stored tap data is authoritative during startup. Legacy input_select
-        helpers must never overwrite the selected cocktail after a restart.
-        """
-        for tap in self.active_tap_ids:
-            entity_id = f"select.hane_{tap}_cocktail"
-            state = self.hass.states.get(entity_id)
-
-            # During startup the select platform may not be loaded yet.
-            # Keep the restored tap state unchanged until the entity exists.
-            if state is None or state.state in ("unknown", "unavailable"):
-                continue
-
-            cocktail_id = self.cocktail_option_to_id(state.state)
-            current = self.get_tap(tap)
-
-            if current.get("cocktail") == cocktail_id:
-                continue
-
-            new_state = _new_tap_state()
-            new_state["cocktail"] = cocktail_id
-            self.taps[tap] = new_state
-            self._taps_dirty = True
 
     async def _save_taps(self) -> None:
         """Gem tap-data (status, karbonering, tider) til disk."""
@@ -320,6 +292,26 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
         )
 
         if deleted:
+            # A confirmed deletion is the only library refresh allowed to clear
+            # a saved tap selection. Temporary read failures or an empty folder
+            # must never overwrite the user's selected cocktail.
+            selections_changed = False
+
+            for tap_id, tap in self.taps.items():
+                if tap.get("cocktail") != cocktail_id:
+                    continue
+
+                self.taps[tap_id] = _new_tap_state()
+                self.stored_selections[
+                    f"select.hane_{tap_id}_cocktail"
+                ] = "Ingen"
+                selections_changed = True
+
+            if selections_changed:
+                await self.store.async_save(self.stored_selections)
+                await self._save_taps()
+                self._taps_dirty = False
+
             await self.async_request_refresh()
 
         return deleted
