@@ -52,10 +52,28 @@ class TapCocktailCocktailSelect(
         self._attr_name = f"Hane {tap} Cocktail"
         self._attr_unique_id = f"tapcocktail_hane_{tap}_cocktail"
 
+    def _stored_option(self) -> str | None:
+        """Return the last explicitly saved option for this tap."""
+        option = self.coordinator.stored_selections.get(
+            f"select.hane_{self._tap}_cocktail"
+        )
+        if not isinstance(option, str) or option == "Ingen":
+            return None
+        return option
+
     @property
     def options(self) -> list[str]:
-        """Return all available cocktails."""
-        return self.coordinator.get_cocktail_options()
+        """Return all available cocktails without invalidating a saved choice."""
+        options = self.coordinator.get_cocktail_options()
+        tap = self.coordinator.get_tap(self._tap)
+        cocktail_id = tap.get("cocktail")
+
+        if isinstance(cocktail_id, str) and cocktail_id:
+            saved_option = self._stored_option()
+            if saved_option and saved_option not in options:
+                options.append(saved_option)
+
+        return options
 
     @property
     def current_option(self) -> str | None:
@@ -66,7 +84,10 @@ class TapCocktailCocktailSelect(
         if not isinstance(cocktail_id, str) or not cocktail_id:
             return "Ingen"
 
-        return self.coordinator.get_cocktail_option(cocktail_id) or "Ingen"
+        return (
+            self.coordinator.get_cocktail_option(cocktail_id)
+            or self._stored_option()
+        )
 
     async def async_select_option(self, option: str) -> None:
         """Select a cocktail and reset the tap state."""
