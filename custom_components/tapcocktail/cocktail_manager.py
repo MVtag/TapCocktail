@@ -80,19 +80,19 @@ def _volume_to_ml(value: str) -> Decimal | None:
 
 
 def _format_decimal(value: Decimal) -> str:
-    """Format a decimal without stripping significant integer zeroes."""
+    """Format a decimal using Danish notation without stripping integer zeroes."""
     text = format(value, "f")
     if "." in text:
         text = text.rstrip("0").rstrip(".")
-    return text
+    return text.replace(".", ",")
 
 
 def _format_ml(value_ml: Decimal) -> str:
     """Format millilitres using a practical cocktail unit."""
     value_ml = value_ml.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
-    if value_ml >= 1000 and value_ml % 1000 == 0:
-        return f"{int(value_ml / 1000)} l"
+    if value_ml >= 1000:
+        return f"{_format_decimal(value_ml / 1000)} l"
 
     if value_ml >= 100 and value_ml % 10 == 0:
         return f"{_format_decimal(value_ml / 10)} cl"
