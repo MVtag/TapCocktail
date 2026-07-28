@@ -19,7 +19,7 @@ COCKTAIL_THEMES = {
     "vinbaseret": {"label": "🍷 Vinbaseret", "icon": "🍷", "color": "#8E24AA"},
     "spritz": {"label": "🥂 Spritz", "icon": "🥂", "color": "#FF7043"},
     "mocktail": {"label": "🥤 Mocktail", "icon": "🥤", "color": "#26A69A"},
-    "vand_sodavand": {"label": "💧 Vand / sodavand", "icon": "💧", "color": "#29B6F6"},
+    "vand_sodavand": {"label": "🥤 Vand / sodavand", "icon": "🥤", "color": "#29B6F6"},
 }
 
 def get_theme(theme_id):
