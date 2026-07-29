@@ -106,7 +106,7 @@ text_sensor:
     entity_id: sensor.tapcocktail_hane_${tap}
     attribute: tema
     internal: true
-    
+
   - platform: homeassistant
     id: cocktail_glass
     entity_id: sensor.tapcocktail_hane_${tap}
@@ -317,33 +317,33 @@ image:
     id: glas_ikon
     type: RGB565
     transparency: alpha_channel
-    
+
 display:
   - platform: mipi_rgb
     model: T-RGB-2.1
     id: tapcocktail_screen
     update_interval: 100ms
-    lambda: |- 
+    lambda: |-
       Color background = Color(0, 150, 200);
-      
+
       if (id(cocktail_color).has_state()) {
         std::string hex = id(cocktail_color).state;
-        
+
         if (!hex.empty() && hex[0] == '#') {
           hex.erase(0, 1);
         }
-        
+
         if (hex.length() == 6) {
           uint32_t value = strtoul(hex.c_str(), nullptr, 16);
-          
+
           uint8_t red = (value >> 16) & 0xFF;
           uint8_t green = (value >> 8) & 0xFF;
           uint8_t blue = value & 0xFF;
-          
+
           background = Color(red, green, blue);
         }
       }
-      
+
       // Særlig skærm under karbonering
       bool karbonerer =
         id(tap_status).has_state() &&
@@ -595,7 +595,7 @@ display:
 
         return;
       }
-      
+
       it.fill(background);
 
       // Animerede bobler styret af cocktailens CO₂
@@ -892,7 +892,7 @@ display:
           id(cocktail_glass).state.c_str()
         );
       }
-      
+
 output:
   - platform: ledc
     pin: GPIO46
