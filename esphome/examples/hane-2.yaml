@@ -1,0 +1,27 @@
+substitutions:
+  tap: "2"
+  device_name: tapcocktail-display-hane-2
+  friendly_name: TapCocktail Display Hane 2
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+packages:
+  tapcocktail_display: github://MVtag/TapCocktail/esphome/packages/tapcocktail-display.yaml@main
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret wifi_password
+
+captive_portal:

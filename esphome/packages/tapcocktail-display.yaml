@@ -1,0 +1,907 @@
+# TapCocktail display package for LILYGO T-RGB 2.1" with FT3267 touch.
+# Set `tap` in the device YAML to select hane 1, 2, 3, ... 8.
+
+substitutions:
+  tap: "1"
+  image_base_url: "https://raw.githubusercontent.com/MVtag/TapCocktail/main/esphome/images"
+
+esp32:
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+globals:
+  - id: vis_klar_side
+    type: bool
+    restore_value: no
+    initial_value: "true"
+
+i2c:
+  sda: GPIO8
+  scl: GPIO48
+
+xl9535:
+  - id: xl9535_hub
+    address: 0x20
+
+spi:
+  clk_pin:
+    xl9535: xl9535_hub
+    number: 5
+  mosi_pin:
+    xl9535: xl9535_hub
+    number: 4
+  interface: software
+
+touchscreen:
+  - platform: ft63x6
+    id: tapcocktail_touch
+    display: tapcocktail_screen
+    address: 0x38
+    interrupt_pin: GPIO1
+
+    reset_pin:
+      xl9535: xl9535_hub
+      number: 1
+      mode:
+        output: true
+
+    on_release:
+      - lambda: |-
+          ESP_LOGI("touch", "Touch sluppet");
+
+          if (
+            id(tap_status).has_state() &&
+            id(tap_status).state == "ready"
+          ) {
+            id(vis_klar_side) = !id(vis_klar_side);
+            id(tapcocktail_screen).update();
+          }
+
+sensor:
+  - platform: homeassistant
+    id: cocktail_co2
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: co2
+    internal: true
+
+  - platform: homeassistant
+    id: cocktail_abv
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: abv
+    internal: true
+
+  - platform: homeassistant
+    id: cocktail_temperature
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: temperatur
+    internal: true
+
+text_sensor:
+  - platform: homeassistant
+    id: cocktail_name
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: navn
+    internal: true
+
+  - platform: homeassistant
+    id: cocktail_color
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: farve
+    internal: true
+
+  - platform: homeassistant
+    id: cocktail_icon
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: ikon
+    internal: true
+
+  - platform: homeassistant
+    id: cocktail_theme
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: tema
+    internal: true
+
+  - platform: homeassistant
+    id: cocktail_glass
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: glas
+    internal: true
+
+  - platform: homeassistant
+    id: tap_status
+    entity_id: sensor.hane_${tap}_status
+    internal: true
+
+  - platform: homeassistant
+    id: carbonation_remaining
+    entity_id: sensor.hane_${tap}_remaining
+    internal: true
+
+font:
+  - file: "gfonts://Roboto@700"
+    id: cocktail_font_stor
+    size: 58
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: cocktail_font_mellem
+    size: 48
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: cocktail_font_normal
+    size: 44
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: cocktail_font_lille
+    size: 39
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: karbonering_font_lille
+    size: 34
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: info_font
+    size: 27
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: glas_font
+    size: 30
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+image:
+  - platform: file
+    file: "${image_base_url}/hyldeblomst-120.png"
+    id: hyldeblomst_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/klassisk-cocktail-120.png"
+    id: klassisk_cocktail_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/martini-120.png"
+    id: martini_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/citrus-120.png"
+    id: citrus_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/lemonade-120.png"
+    id: lemonade_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/tropisk-120.png"
+    id: tropisk_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/mango-120.png"
+    id: mango_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/baer-120.png"
+    id: baer_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/kirsebaer-120.png"
+    id: kirsebaer_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/aeble-120.png"
+    id: aeble_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/frisk-urter-120.png"
+    id: frisk_urter_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/cremet-120.png"
+    id: cremet_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/dessert-120.png"
+    id: dessert_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/fad-oel-120.png"
+    id: fad_oel_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/frozen-120.png"
+    id: frozen_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/eksotisk-120.png"
+    id: eksotisk_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/vinbaseret-120.png"
+    id: vinbaseret_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/spritz-120.png"
+    id: spritz_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/vand-sodavand-120.png"
+    id: vand_sodavand_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/mocktail-120.png"
+    id: mocktail_ikon
+    type: RGB565
+    transparency: chroma_key
+
+  - platform: file
+    file: "${image_base_url}/abv-32.png"
+    id: abv_ikon
+    type: RGB565
+    transparency: alpha_channel
+
+  - platform: file
+    file: "${image_base_url}/co2-32.png"
+    id: co2_ikon
+    type: RGB565
+    transparency: alpha_channel
+
+  - platform: file
+    file: "${image_base_url}/temperatur-32.png"
+    id: temperatur_ikon
+    type: RGB565
+    transparency: alpha_channel
+
+  - platform: file
+    file: "${image_base_url}/glas-32.png"
+    id: glas_ikon
+    type: RGB565
+    transparency: alpha_channel
+
+display:
+  - platform: mipi_rgb
+    model: T-RGB-2.1
+    id: tapcocktail_screen
+    update_interval: 100ms
+    lambda: |-
+      Color background = Color(0, 150, 200);
+
+      if (id(cocktail_color).has_state()) {
+        std::string hex = id(cocktail_color).state;
+
+        if (!hex.empty() && hex[0] == '#') {
+          hex.erase(0, 1);
+        }
+
+        if (hex.length() == 6) {
+          uint32_t value = strtoul(hex.c_str(), nullptr, 16);
+
+          uint8_t red = (value >> 16) & 0xFF;
+          uint8_t green = (value >> 8) & 0xFF;
+          uint8_t blue = value & 0xFF;
+
+          background = Color(red, green, blue);
+        }
+      }
+
+      // Særlig skærm under karbonering
+      bool karbonerer =
+        id(tap_status).has_state() &&
+        id(tap_status).state == "carbonating";
+
+      if (karbonerer) {
+        // Cocktailens temafarve
+        it.fill(background);
+
+        // Animerede CO₂-bobler
+        const int carbonating_bubble_x[] = {
+          55, 105, 155, 205, 255, 305, 355, 405,
+          85, 180, 280, 380
+        };
+
+        const int carbonating_bubble_offset[] = {
+          0, 240, 490, 720, 960, 1210,
+          1460, 1700, 1950, 2210, 2470, 2740
+        };
+
+        const int carbonating_bubble_radius[] = {
+          6, 10, 7, 12, 8, 6,
+          11, 7, 9, 13, 6, 10
+        };
+
+        uint32_t carbonating_time = millis();
+
+        for (int i = 0; i < 12; i++) {
+          int y = 470 - (
+            static_cast<int>(
+              carbonating_time / 5 + carbonating_bubble_offset[i]
+            ) % 520
+          );
+
+          it.circle(
+            carbonating_bubble_x[i],
+            y,
+            carbonating_bubble_radius[i],
+            Color(45, 45, 45)
+          );
+        }
+
+        // Overskrift
+        it.print(
+          240,
+          135,
+          id(cocktail_font_mellem),
+          Color::BLACK,
+          TextAlign::CENTER,
+          "KARBONERER"
+        );
+
+        // Resterende tid
+        if (id(carbonation_remaining).has_state()) {
+          it.printf(
+            240,
+            235,
+            id(cocktail_font_stor),
+            Color::BLACK,
+            TextAlign::CENTER,
+            "%s",
+            id(carbonation_remaining).state.c_str()
+          );
+        } else {
+          it.print(
+            240,
+            235,
+            id(cocktail_font_stor),
+            Color::BLACK,
+            TextAlign::CENTER,
+            "--:--:--"
+          );
+        }
+
+        it.print(
+          240,
+          290,
+          id(info_font),
+          Color::BLACK,
+          TextAlign::CENTER,
+          "TILBAGE"
+        );
+
+        // Cocktailnavn og ønsket CO₂
+        if (id(cocktail_name).has_state()) {
+          std::string navn = id(cocktail_name).state;
+          auto *navne_font = id(cocktail_font_normal);
+
+          int x1, y1, text_width, text_height;
+
+          it.get_text_bounds(
+            0,
+            0,
+            navn.c_str(),
+            navne_font,
+            TextAlign::TOP_LEFT,
+            &x1,
+            &y1,
+            &text_width,
+            &text_height
+          );
+
+          if (text_width > 390) {
+            navne_font = id(karbonering_font_lille);
+          }
+
+          it.print(
+            240,
+            355,
+            navne_font,
+            Color::BLACK,
+            TextAlign::CENTER,
+            navn.c_str()
+          );
+        }
+
+        if (id(cocktail_co2).has_state()) {
+          it.image(
+            170,
+            405,
+            id(co2_ikon),
+            ImageAlign::CENTER
+          );
+
+          it.printf(
+            195,
+            405,
+            id(glas_font),
+            Color::BLACK,
+            TextAlign::CENTER_LEFT,
+            "%.1f vol",
+            id(cocktail_co2).state
+          );
+        }
+
+        // Stop her, så den normale cocktailvisning ikke tegnes ovenpå
+        return;
+      }
+
+      // Klar til servering – touch skifter til normal cocktailvisning
+      bool klar =
+        id(tap_status).has_state() &&
+        id(tap_status).state == "ready";
+
+      if (klar && id(vis_klar_side)) {
+        it.fill(background);
+
+        // Animerede CO₂-bobler
+        float co2 = 2.4;
+
+        if (id(cocktail_co2).has_state()) {
+          co2 = id(cocktail_co2).state;
+        }
+
+        float level = (co2 - 2.0) / 1.0;
+        level = std::max(0.0f, std::min(1.0f, level));
+
+        int bubble_count = 6 + static_cast<int>(level * 6);
+        float bubble_speed = 7.0 + (level * 10.0);
+
+        uint32_t time = millis();
+
+        const int bubble_x[] = {
+          55, 405, 125, 325, 225, 90,
+          365, 165, 285, 205, 345, 135
+        };
+
+        const int bubble_offset[] = {
+          0, 170, 340, 510, 680, 850,
+          1020, 1190, 1360, 1530, 1870, 2210
+        };
+
+        const int bubble_radius[] = {
+          5, 8, 6, 11, 7, 5,
+          9, 6, 10, 5, 7, 8
+        };
+
+        for (int i = 0; i < bubble_count; i++) {
+          int y = 450 - (
+            (static_cast<int>(time / bubble_speed) + bubble_offset[i]) % 440
+          );
+
+          it.circle(
+            bubble_x[i],
+            y,
+            bubble_radius[i],
+            Color(45, 45, 45)
+          );
+        }
+
+        it.print(
+          240,
+          125,
+          id(cocktail_font_mellem),
+          Color::BLACK,
+          TextAlign::CENTER,
+          "KLAR TIL"
+        );
+
+        it.print(
+          240,
+          185,
+          id(cocktail_font_stor),
+          Color::BLACK,
+          TextAlign::CENTER,
+          "SERVERING"
+        );
+
+        if (id(cocktail_name).has_state()) {
+          std::string navn = id(cocktail_name).state;
+          auto *navne_font = id(cocktail_font_normal);
+
+          int x1, y1, text_width, text_height;
+
+          it.get_text_bounds(
+            0,
+            0,
+            navn.c_str(),
+            navne_font,
+            TextAlign::TOP_LEFT,
+            &x1,
+            &y1,
+            &text_width,
+            &text_height
+          );
+
+          if (text_width > 390) {
+            navne_font = id(karbonering_font_lille);
+          }
+
+          it.print(
+            240,
+            280,
+            navne_font,
+            Color::BLACK,
+            TextAlign::CENTER,
+            navn.c_str()
+          );
+        }
+
+        it.print(
+          240,
+          365,
+          id(glas_font),
+          Color::BLACK,
+          TextAlign::CENTER,
+          "TRYK FOR COCKTAILINFO"
+        );
+
+        return;
+      }
+
+      it.fill(background);
+
+      // Animerede bobler styret af cocktailens CO₂
+      float co2 = 2.4;
+
+      if (id(cocktail_co2).has_state()) {
+        co2 = id(cocktail_co2).state;
+      }
+
+      // Begræns CO₂ til området 2,0–3,0 vol
+      if (co2 < 2.0) co2 = 2.0;
+      if (co2 > 3.0) co2 = 3.0;
+
+      float level = co2 - 2.0;
+
+      // 2,0 vol = 5 bobler / 3,0 vol = 12 bobler
+      int bubble_count = 5 + static_cast<int>(level * 7.0);
+
+      // 2,0 vol = langsomme / 3,0 vol = hurtige bobler
+      float bubble_speed = 7.0 + (level * 10.0);
+
+      uint32_t time = millis();
+
+      const int bubble_x[] = {
+        55, 405, 125, 325, 225, 90,
+        365, 165, 285, 205, 345, 135
+      };
+
+      const int bubble_offset[] = {
+        0, 170, 340, 510, 680, 850,
+        1020, 1190, 1360, 1530, 1870, 2210
+      };
+
+      const int bubble_radius[] = {
+        5, 8, 6, 11, 7, 5,
+        9, 6, 10, 5, 7, 8
+      };
+
+      for (int i = 0; i < bubble_count; i++) {
+        int y = 450 - (
+          (static_cast<int>(time / bubble_speed) + bubble_offset[i]) % 440
+        );
+
+        it.circle(
+          bubble_x[i],
+          y,
+          bubble_radius[i],
+          Color(45, 45, 45)
+        );
+      }
+
+      std::string tema = "";
+      std::string ikon = "";
+
+      if (id(cocktail_theme).has_state()) {
+        tema = id(cocktail_theme).state;
+      }
+
+      if (id(cocktail_icon).has_state()) {
+        ikon = id(cocktail_icon).state;
+      }
+
+      // Use the stable theme ID first. Emoji are only a fallback because
+      // multiple themes can intentionally share the same emoji.
+      if (tema == "klassisk") {
+        it.image(240, 120, id(klassisk_cocktail_ikon), ImageAlign::CENTER);
+      } else if (tema == "martini") {
+        it.image(240, 120, id(martini_ikon), ImageAlign::CENTER);
+      } else if (tema == "citrus") {
+        it.image(240, 120, id(citrus_ikon), ImageAlign::CENTER);
+      } else if (tema == "lemonade") {
+        it.image(240, 120, id(lemonade_ikon), ImageAlign::CENTER);
+      } else if (tema == "tropisk") {
+        it.image(240, 120, id(tropisk_ikon), ImageAlign::CENTER);
+      } else if (tema == "mango") {
+        it.image(240, 120, id(mango_ikon), ImageAlign::CENTER);
+      } else if (tema == "baer") {
+        it.image(240, 120, id(baer_ikon), ImageAlign::CENTER);
+      } else if (tema == "kirsebaer") {
+        it.image(240, 120, id(kirsebaer_ikon), ImageAlign::CENTER);
+      } else if (tema == "aeble") {
+        it.image(240, 120, id(aeble_ikon), ImageAlign::CENTER);
+      } else if (tema == "frisk_urter") {
+        it.image(240, 120, id(frisk_urter_ikon), ImageAlign::CENTER);
+      } else if (tema == "cremet") {
+        it.image(240, 120, id(cremet_ikon), ImageAlign::CENTER);
+      } else if (tema == "dessert") {
+        it.image(240, 120, id(dessert_ikon), ImageAlign::CENTER);
+      } else if (tema == "fad_oel") {
+        it.image(240, 120, id(fad_oel_ikon), ImageAlign::CENTER);
+      } else if (tema == "frozen") {
+        it.image(240, 120, id(frozen_ikon), ImageAlign::CENTER);
+      } else if (tema == "eksotisk") {
+        it.image(240, 120, id(eksotisk_ikon), ImageAlign::CENTER);
+      } else if (tema == "vinbaseret") {
+        it.image(240, 120, id(vinbaseret_ikon), ImageAlign::CENTER);
+      } else if (tema == "spritz") {
+        it.image(240, 120, id(spritz_ikon), ImageAlign::CENTER);
+      } else if (tema == "mocktail") {
+        it.image(240, 120, id(mocktail_ikon), ImageAlign::CENTER);
+      } else if (tema == "vand_sodavand") {
+        it.image(240, 120, id(vand_sodavand_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🌼") {
+          it.image(240, 120, id(hyldeblomst_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍹") {
+          it.image(240, 120, id(klassisk_cocktail_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍸") {
+          it.image(240, 120, id(martini_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍊") {
+          it.image(240, 120, id(citrus_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍋") {
+          it.image(240, 120, id(lemonade_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🌺") {
+          it.image(240, 120, id(tropisk_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🥭") {
+          it.image(240, 120, id(mango_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍓") {
+          it.image(240, 120, id(baer_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍒") {
+          it.image(240, 120, id(kirsebaer_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍏") {
+          it.image(240, 120, id(aeble_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🌿" || ikon == "🥒") {
+          it.image(240, 120, id(frisk_urter_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🥥") {
+          it.image(240, 120, id(cremet_ikon), ImageAlign::CENTER);
+      } else if (ikon == "☕") {
+          it.image(240, 120, id(dessert_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍺") {
+          it.image(240, 120, id(fad_oel_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🧊") {
+          it.image(240, 120, id(frozen_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🌴") {
+          it.image(240, 120, id(eksotisk_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🍷") {
+          it.image(240, 120, id(vinbaseret_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🥂") {
+          it.image(240, 120, id(spritz_ikon), ImageAlign::CENTER);
+      } else if (ikon == "🚫" || ikon == "🥤") {
+          it.image(240, 120, id(mocktail_ikon), ImageAlign::CENTER);
+      } else if (ikon == "💧") {
+          it.image(240, 120, id(vand_sodavand_ikon), ImageAlign::CENTER);
+      }
+
+      if (id(cocktail_name).has_state()) {
+        std::string navn = id(cocktail_name).state;
+        auto *navne_font = id(cocktail_font_stor);
+
+        int x1, y1, text_width, text_height;
+
+        it.get_text_bounds(
+          0,
+          0,
+          navn.c_str(),
+          navne_font,
+          TextAlign::TOP_LEFT,
+          &x1,
+          &y1,
+          &text_width,
+          &text_height
+        );
+
+        if (text_width > 390) {
+          navne_font = id(cocktail_font_mellem);
+
+          it.get_text_bounds(
+            0,
+            0,
+            navn.c_str(),
+            navne_font,
+            TextAlign::TOP_LEFT,
+            &x1,
+            &y1,
+            &text_width,
+            &text_height
+          );
+        }
+
+        if (text_width > 390) {
+          navne_font = id(cocktail_font_normal);
+
+          it.get_text_bounds(
+            0,
+            0,
+            navn.c_str(),
+            navne_font,
+            TextAlign::TOP_LEFT,
+            &x1,
+            &y1,
+            &text_width,
+            &text_height
+          );
+        }
+
+        if (text_width > 390) {
+          navne_font = id(cocktail_font_lille);
+        }
+
+        it.print(
+          240,
+          235,
+          navne_font,
+          Color::BLACK,
+          TextAlign::CENTER,
+          navn.c_str()
+        );
+      } else {
+        it.print(
+          240,
+          240,
+          id(cocktail_font_normal),
+          Color::BLACK,
+          TextAlign::CENTER,
+          "Venter på cocktail..."
+        );
+      }
+
+      // ABV
+      if (id(cocktail_abv).has_state()) {
+        it.image(
+          75,
+          320,
+          id(abv_ikon),
+          ImageAlign::CENTER
+        );
+
+        it.printf(
+          100,
+          320,
+          id(info_font),
+          Color::BLACK,
+          TextAlign::CENTER_LEFT,
+          "%.1f %%",
+          id(cocktail_abv).state
+        );
+      }
+
+      // CO₂
+      if (id(cocktail_co2).has_state()) {
+        it.image(
+          205,
+          320,
+          id(co2_ikon),
+          ImageAlign::CENTER
+        );
+
+        it.printf(
+          230,
+          320,
+          id(info_font),
+          Color::BLACK,
+          TextAlign::CENTER_LEFT,
+          "%.1f vol",
+          id(cocktail_co2).state
+        );
+      }
+
+      // Temperatur
+      if (id(cocktail_temperature).has_state()) {
+        it.image(
+          340,
+          320,
+          id(temperatur_ikon),
+          ImageAlign::CENTER
+        );
+
+        it.printf(
+          365,
+          320,
+          id(info_font),
+          Color::BLACK,
+          TextAlign::CENTER_LEFT,
+          "%.0f °C",
+          id(cocktail_temperature).state
+        );
+      }
+
+      // Glastype
+      if (id(cocktail_glass).has_state()) {
+        it.image(
+          175,
+          395,
+          id(glas_ikon),
+          ImageAlign::CENTER
+        );
+
+        it.printf(
+          200,
+          395,
+          id(glas_font),
+          Color::BLACK,
+          TextAlign::CENTER_LEFT,
+          "%s",
+          id(cocktail_glass).state.c_str()
+        );
+      }
+
+output:
+  - platform: ledc
+    pin: GPIO46
+    frequency: 1000 Hz
+    id: display_backlight_output
+
+light:
+  - platform: monochromatic
+    id: display_backlight
+    name: "TapCocktail skærmlys"
+    output: display_backlight_output
+    restore_mode: ALWAYS_ON
