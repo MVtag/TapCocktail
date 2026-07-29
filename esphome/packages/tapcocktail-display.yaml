@@ -365,8 +365,8 @@ display:
         };
 
         const int carbonating_bubble_radius[] = {
-          6, 10, 7, 12, 8, 6,
-          11, 7, 9, 13, 6, 10
+          8, 14, 10, 16, 11, 8,
+          15, 10, 12, 18, 8, 14
         };
 
         uint32_t carbonating_time = millis();
@@ -502,7 +502,7 @@ display:
         level = std::max(0.0f, std::min(1.0f, level));
 
         int bubble_count = 6 + static_cast<int>(level * 6);
-        float bubble_speed = 7.0 + (level * 10.0);
+        float bubble_speed = 17.0 - (level * 10.0);
 
         uint32_t time = millis();
 
@@ -517,8 +517,8 @@ display:
         };
 
         const int bubble_radius[] = {
-          5, 8, 6, 11, 7, 5,
-          9, 6, 10, 5, 7, 8
+          7, 11, 8, 15, 10, 7,
+          12, 8, 14, 7, 10, 11
         };
 
         for (int i = 0; i < bubble_count; i++) {
@@ -615,7 +615,7 @@ display:
       int bubble_count = 5 + static_cast<int>(level * 7.0);
 
       // 2,0 vol = langsomme / 3,0 vol = hurtige bobler
-      float bubble_speed = 7.0 + (level * 10.0);
+      float bubble_speed = 17.0 - (level * 10.0);
 
       uint32_t time = millis();
 
@@ -630,8 +630,8 @@ display:
       };
 
       const int bubble_radius[] = {
-        5, 8, 6, 11, 7, 5,
-        9, 6, 10, 5, 7, 8
+        7, 11, 8, 15, 10, 7,
+        12, 8, 14, 7, 10, 11
       };
 
       for (int i = 0; i < bubble_count; i++) {
