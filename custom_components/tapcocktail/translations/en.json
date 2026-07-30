@@ -54,7 +54,7 @@
           "ny_kategori": "Ny kategori (valgfrit)",
           "tema": "Cocktailtema",
           "ikon_override": "Eget ikon/emoji (valgfrit)",
-          "abv": "ABV",
+          "abv": "ABV (used manually when automatic ABV is off)",
           "co2": "CO₂",
           "temperatur": "Temperatur",
           "glas": "Glastype",
@@ -90,7 +90,20 @@
           "ingrediens_6_9l": "Ingredient 6 – 9 liters",
           "brug_tema_farve": "Use the theme's default color",
           "automatisk_beregning": "Automatically calculate 2 and 9 liters",
-          "beregn_fra": "Calculate from"
+          "beregn_fra": "Calculate from",
+          "automatisk_abv": "Calculate ABV automatically",
+          "ingrediens_1_alkoholprocent": "Ingredient 1 – alcohol percentage",
+          "ingrediens_2_alkoholprocent": "Ingredient 2 – alcohol percentage",
+          "ingrediens_3_alkoholprocent": "Ingredient 3 – alcohol percentage",
+          "ingrediens_4_alkoholprocent": "Ingredient 4 – alcohol percentage",
+          "ingrediens_5_alkoholprocent": "Ingredient 5 – alcohol percentage",
+          "ingrediens_6_alkoholprocent": "Ingredient 6 – alcohol percentage",
+          "ingrediens_7_alkoholprocent": "Ingredient 7 – alcohol percentage",
+          "ingrediens_8_alkoholprocent": "Ingredient 8 – alcohol percentage",
+          "ingrediens_9_alkoholprocent": "Ingredient 9 – alcohol percentage",
+          "ingrediens_10_alkoholprocent": "Ingredient 10 – alcohol percentage",
+          "ingrediens_11_alkoholprocent": "Ingredient 11 – alcohol percentage",
+          "ingrediens_12_alkoholprocent": "Ingredient 12 – alcohol percentage"
         }
       },
       "delete_cocktail": {
@@ -111,7 +124,7 @@
           "ny_kategori": "Ny kategori (valgfrit)",
           "tema": "Cocktailtema",
           "ikon_override": "Eget ikon/emoji (valgfrit)",
-          "abv": "ABV",
+          "abv": "ABV (used manually when automatic ABV is off)",
           "co2": "CO₂",
           "temperatur": "Temperatur",
           "glas": "Glastype",
@@ -147,7 +160,20 @@
           "ingrediens_6_9l": "Ingredient 6 – 9 liters",
           "brug_tema_farve": "Use the theme's default color",
           "automatisk_beregning": "Automatically calculate 2 and 9 liters",
-          "beregn_fra": "Calculate from"
+          "beregn_fra": "Calculate from",
+          "automatisk_abv": "Calculate ABV automatically",
+          "ingrediens_1_alkoholprocent": "Ingredient 1 – alcohol percentage",
+          "ingrediens_2_alkoholprocent": "Ingredient 2 – alcohol percentage",
+          "ingrediens_3_alkoholprocent": "Ingredient 3 – alcohol percentage",
+          "ingrediens_4_alkoholprocent": "Ingredient 4 – alcohol percentage",
+          "ingrediens_5_alkoholprocent": "Ingredient 5 – alcohol percentage",
+          "ingrediens_6_alkoholprocent": "Ingredient 6 – alcohol percentage",
+          "ingrediens_7_alkoholprocent": "Ingredient 7 – alcohol percentage",
+          "ingrediens_8_alkoholprocent": "Ingredient 8 – alcohol percentage",
+          "ingrediens_9_alkoholprocent": "Ingredient 9 – alcohol percentage",
+          "ingrediens_10_alkoholprocent": "Ingredient 10 – alcohol percentage",
+          "ingrediens_11_alkoholprocent": "Ingredient 11 – alcohol percentage",
+          "ingrediens_12_alkoholprocent": "Ingredient 12 – alcohol percentage"
         }
       },
       "edit_ingredient_count": {
