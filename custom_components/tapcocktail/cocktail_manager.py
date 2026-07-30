@@ -186,6 +186,64 @@ def _calculate_ingredient_amounts(
     }
 
 
+def _calculate_abv(
+    ingredients: list[dict[str, Any]],
+    *,
+    enabled: bool,
+    source: str,
+    manual_abv: float,
+) -> tuple[float, dict[str, float | str | bool]]:
+    """Calculate finished-drink ABV from ingredient volumes and strengths."""
+    if not enabled:
+        return manual_abv, {
+            "enabled": False,
+            "source": source,
+            "calculated_abv": manual_abv,
+        }
+
+    source_key = _column_key(source)
+    total_volume = Decimal("0")
+    pure_alcohol = Decimal("0")
+
+    for item in ingredients:
+        volume = _volume_to_ml(str(item.get(source_key, "")))
+        if volume is None:
+            raise CocktailValidationError(
+                f"Ingrediensen '{item.get('navn', '')}' mangler en mængde til ABV-beregningen."
+            )
+
+        alcohol_percentage = Decimal(
+            str(
+                _as_float(
+                    item.get("alkoholprocent", 0),
+                    f"Alkoholprocent for {item.get('navn', 'ingrediens')}",
+                    0,
+                    100,
+                )
+            )
+        )
+        item["alkoholprocent"] = float(alcohol_percentage)
+        total_volume += volume
+        pure_alcohol += volume * alcohol_percentage / Decimal("100")
+
+    if total_volume <= 0:
+        raise CocktailValidationError(
+            "ABV kan ikke beregnes, fordi den samlede mængde er 0."
+        )
+
+    calculated = (pure_alcohol / total_volume * Decimal("100")).quantize(
+        Decimal("0.01"),
+        rounding=ROUND_HALF_UP,
+    )
+    return float(calculated), {
+        "enabled": True,
+        "source": source,
+        "total_volume_ml": float(total_volume),
+        "pure_alcohol_ml": float(pure_alcohol),
+        "calculated_abv": float(calculated),
+    }
+
+
 def parse_ingredients(value):
     if isinstance(value, list):
         return value
@@ -261,13 +319,22 @@ class CocktailManager:
             source=calculation_source,
         )
 
+        manual_abv = _as_float(data.get("abv", 0), "ABV", 0, 100)
+        abv, abv_calculation = _calculate_abv(
+            ingredients,
+            enabled=bool(data.get("automatisk_abv", False)),
+            source=calculation_source,
+            manual_abv=manual_abv,
+        )
+
         cocktail = {
             "id": cocktail_id,
             "navn": name,
             "tema": theme_id,
             "ikon": icon,
             "farve": color.upper(),
-            "abv": _as_float(data.get("abv", 0), "ABV", 0, 100),
+            "abv": abv,
+            "abv_beregning": abv_calculation,
             "co2": co2,
             "temperatur": _as_float(data.get("temperatur", 4), "Temperatur", -10, 30),
             "glas": str(data.get("glas") or "").strip(),
