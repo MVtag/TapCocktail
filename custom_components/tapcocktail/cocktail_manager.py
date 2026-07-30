@@ -43,6 +43,43 @@ def _as_float(value: Any, field_name: str, minimum: float, maximum: float) -> fl
         )
     return number
 
+
+def _recommended_shelf_life_days(category: str) -> int:
+    """Return a conservative shelf-life suggestion for a cocktail category."""
+    category = category.lower().replace("-", "_")
+    if any(word in category for word in ("citrus", "frisk", "juice")):
+        return 5
+    if any(word in category for word in ("lemonade", "sodavand", "mocktail")):
+        return 14
+    if any(word in category for word in ("spiritus", "martini", "klassisk")):
+        return 30
+    return 7
+
+
+def _build_shelf_life(data: dict[str, Any], category: str) -> dict[str, Any]:
+    """Validate and normalize the selected shelf-life mode."""
+    mode = str(data.get("holdbarhed_valg") or "none")
+    if mode == "none":
+        return {"mode": "none", "days": None}
+    if mode == "recommended":
+        return {
+            "mode": "recommended",
+            "days": _recommended_shelf_life_days(category),
+        }
+    if mode in {"3", "5", "7", "14", "30"}:
+        return {"mode": mode, "days": int(mode)}
+    if mode == "custom":
+        days = int(
+            _as_float(
+                data.get("holdbarhed_dage", 7),
+                "Brugerdefineret holdbarhed",
+                1,
+                3650,
+            )
+        )
+        return {"mode": "custom", "days": days}
+    raise CocktailValidationError("Vælg en gyldig holdbarhed.")
+
 _VOLUME_PATTERN = re.compile(
     r"^\s*(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|cl|dl|l)\s*$",
     re.IGNORECASE,
@@ -338,6 +375,7 @@ class CocktailManager:
             "co2": co2,
             "temperatur": _as_float(data.get("temperatur", 4), "Temperatur", -10, 30),
             "glas": str(data.get("glas") or "").strip(),
+            "holdbarhed": _build_shelf_life(data, category),
             "ingredienser": ingredients,
             "beregning": calculation,
             "fremgangsmaade": str(data.get("fremgangsmaade") or "").strip(),
