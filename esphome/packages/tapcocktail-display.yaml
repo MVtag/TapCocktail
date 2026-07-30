@@ -82,6 +82,12 @@ sensor:
     attribute: temperatur
     internal: true
 
+  - platform: homeassistant
+    id: shelf_life_remaining_days
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: holdbarhed_resterende_dage
+    internal: true
+
 text_sensor:
   - platform: homeassistant
     id: cocktail_name
@@ -116,6 +122,12 @@ text_sensor:
   - platform: homeassistant
     id: tap_status
     entity_id: sensor.hane_${tap}_status
+    internal: true
+
+  - platform: homeassistant
+    id: shelf_life_status
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: holdbarhed_status
     internal: true
 
   - platform: homeassistant
@@ -584,10 +596,71 @@ display:
           );
         }
 
+        // Resterende holdbarhed. Skjules automatisk ved "Ingen udløbsdato".
+        if (
+          id(shelf_life_remaining_days).has_state() &&
+          id(shelf_life_status).has_state()
+        ) {
+          int remaining = static_cast<int>(
+            id(shelf_life_remaining_days).state
+          );
+          std::string shelf_status = id(shelf_life_status).state;
+          Color shelf_color = Color(0, 120, 0);
+
+          if (shelf_status == "warning") {
+            shelf_color = Color(255, 140, 0);
+          } else if (shelf_status == "expired") {
+            shelf_color = Color(200, 0, 0);
+          }
+
+          it.print(
+            240,
+            330,
+            id(info_font),
+            shelf_color,
+            TextAlign::CENTER,
+            "HOLDBARHED"
+          );
+
+          if (remaining < 0) {
+            int overdue = -remaining;
+            it.printf(
+              240,
+              365,
+              id(karbonering_font_lille),
+              shelf_color,
+              TextAlign::CENTER,
+              "OVERSKREDET %d %s",
+              overdue,
+              overdue == 1 ? "DAG" : "DAGE"
+            );
+          } else if (remaining == 0) {
+            it.print(
+              240,
+              365,
+              id(karbonering_font_lille),
+              shelf_color,
+              TextAlign::CENTER,
+              "SIDSTE ANBEFALEDE DAG"
+            );
+          } else {
+            it.printf(
+              240,
+              365,
+              id(karbonering_font_lille),
+              shelf_color,
+              TextAlign::CENTER,
+              "%d %s TILBAGE",
+              remaining,
+              remaining == 1 ? "DAG" : "DAGE"
+            );
+          }
+        }
+
         it.print(
           240,
-          365,
-          id(glas_font),
+          420,
+          id(info_font),
           Color::BLACK,
           TextAlign::CENTER,
           "TRYK FOR COCKTAILINFO"
