@@ -80,6 +80,9 @@ def _ingredients_to_form(cocktail: dict[str, Any]) -> dict[str, str]:
     for index in range(1, 13):
         item = ingredients[index - 1] if index <= len(ingredients) else {}
         result[f"ingrediens_{index}_navn"] = str(item.get("navn", ""))
+        result[f"ingrediens_{index}_alkoholprocent"] = item.get(
+            "alkoholprocent", 0
+        )
         result[f"ingrediens_{index}_glas"] = str(item.get("glas", ""))
         result[f"ingrediens_{index}_2l"] = str(item.get("2_liter", ""))
         result[f"ingrediens_{index}_9l"] = str(item.get("9_liter", ""))
@@ -436,6 +439,15 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
             "beregn_fra": cocktail.get(
                 "beregning", {}
             ).get("source", "glass"),
+            "automatisk_abv": cocktail.get(
+                "abv_beregning", {}
+            ).get(
+                "enabled",
+                any(
+                    "alkoholprocent" in ingredient
+                    for ingredient in cocktail.get("ingredienser", [])
+                ),
+            ),
             "abv": cocktail.get("abv", 0),
             "co2": cocktail.get("co2", 2.5),
             "temperatur": cocktail.get("temperatur", 4),
@@ -653,6 +665,13 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
 
         fields[
             vol.Required(
+                "automatisk_abv",
+                default=values.get("automatisk_abv", True),
+            )
+        ] = BooleanSelector()
+
+        fields[
+            vol.Required(
                 "abv",
                 default=values.get("abv", 0),
             )
@@ -721,6 +740,24 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
                     ),
                 )
             ] = TextSelector(TextSelectorConfig())
+
+            fields[
+                vol.Required(
+                    f"ingrediens_{index}_alkoholprocent",
+                    default=values.get(
+                        f"ingrediens_{index}_alkoholprocent",
+                        37.5 if not defaults and index == 1 else 0,
+                    ),
+                )
+            ] = NumberSelector(
+                NumberSelectorConfig(
+                    min=0,
+                    max=100,
+                    step=0.1,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement="%",
+                )
+            )
 
             fields[
                 vol.Optional(
@@ -944,6 +981,9 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
         ingredients = []
         for index in range(1, self._ingredient_count + 1):
             name = str(data.pop(f"ingrediens_{index}_navn", "")).strip()
+            alcohol_percentage = data.pop(
+                f"ingrediens_{index}_alkoholprocent", 0
+            )
             glass = str(data.pop(f"ingrediens_{index}_glas", "")).strip()
             two_liter = str(data.pop(f"ingrediens_{index}_2l", "")).strip()
             nine_liter = str(data.pop(f"ingrediens_{index}_9l", "")).strip()
@@ -952,6 +992,7 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
                 ingredients.append(
                     {
                         "navn": name,
+                        "alkoholprocent": alcohol_percentage,
                         "glas": glass,
                         "2_liter": two_liter,
                         "9_liter": nine_liter,
