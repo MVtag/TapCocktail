@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from math import ceil
 from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
@@ -161,6 +162,43 @@ class TapCocktailHaneSensor(TapCocktailTapSensorBase):
         attributes["bubble_speed"] = round(6 / co2, 1)
         attributes["bubble_amount"] = round(co2 * 20)
         attributes["hane"] = self.hane
+
+        # Expose flat shelf-life attributes for dashboards, automations and
+        # low-power displays that cannot parse the nested recipe object.
+        attributes["holdbarhed_dage"] = None
+        attributes["holdbarhed_resterende_dage"] = None
+        attributes["holdbarhed_status"] = None
+
+        shelf_life = attributes.get("holdbarhed")
+        if isinstance(shelf_life, dict):
+            try:
+                shelf_life_days = int(shelf_life.get("days"))
+            except (TypeError, ValueError):
+                shelf_life_days = 0
+
+            if shelf_life_days > 0:
+                attributes["holdbarhed_dage"] = shelf_life_days
+                ready_since = tap.get("ready_since")
+
+                if (
+                    tap.get("status") == TAP_STATUS_READY
+                    and isinstance(ready_since, datetime)
+                ):
+                    elapsed_days = max(
+                        0.0,
+                        (dt_util.utcnow() - ready_since).total_seconds() / 86400,
+                    )
+                    remaining_days = ceil(shelf_life_days - elapsed_days)
+                    used_ratio = elapsed_days / shelf_life_days
+
+                    attributes["holdbarhed_resterende_dage"] = remaining_days
+                    attributes["holdbarhed_status"] = (
+                        "expired"
+                        if remaining_days < 0
+                        else "warning"
+                        if used_ratio >= 0.8
+                        else "fresh"
+                    )
 
         return attributes
 
