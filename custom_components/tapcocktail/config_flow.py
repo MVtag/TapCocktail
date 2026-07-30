@@ -21,6 +21,17 @@ from homeassistant.helpers.selector import (
 from .cocktail_manager import CocktailValidationError
 from .themes import COCKTAIL_THEMES
 
+SHELF_LIFE_OPTIONS = [
+    {"value": "recommended", "label": "Anbefalet ud fra kategori"},
+    {"value": "3", "label": "3 dage"},
+    {"value": "5", "label": "5 dage"},
+    {"value": "7", "label": "7 dage"},
+    {"value": "14", "label": "14 dage"},
+    {"value": "30", "label": "30 dage"},
+    {"value": "custom", "label": "Brugerdefineret"},
+    {"value": "none", "label": "Ingen udløbsdato"},
+]
+
 INGREDIENT_EXAMPLE = """Gin | 4 cl | 40 cl | 180 cl
 Mangopuré | 3 cl | 30 cl | 135 cl
 Limesaft | 2 cl | 20 cl | 90 cl"""
@@ -452,6 +463,12 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
             "co2": cocktail.get("co2", 2.5),
             "temperatur": cocktail.get("temperatur", 4),
             "glas": cocktail.get("glas", ""),
+            "holdbarhed_valg": cocktail.get(
+                "holdbarhed", {}
+            ).get("mode", "none"),
+            "holdbarhed_dage": cocktail.get(
+                "holdbarhed", {}
+            ).get("days", 7) or 7,
             **_ingredients_to_form(cocktail),
             "fremgangsmaade": cocktail.get("fremgangsmaade", ""),
             "pynt": cocktail.get("pynt", ""),
@@ -722,6 +739,33 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
             )
         ] = TextSelector(
             TextSelectorConfig()
+        )
+
+        fields[
+            vol.Required(
+                "holdbarhed_valg",
+                default=values.get("holdbarhed_valg", "recommended"),
+            )
+        ] = SelectSelector(
+            SelectSelectorConfig(
+                options=SHELF_LIFE_OPTIONS,
+                sort=False,
+            )
+        )
+
+        fields[
+            vol.Required(
+                "holdbarhed_dage",
+                default=values.get("holdbarhed_dage", 7),
+            )
+        ] = NumberSelector(
+            NumberSelectorConfig(
+                min=1,
+                max=3650,
+                step=1,
+                mode=NumberSelectorMode.BOX,
+                unit_of_measurement="dage",
+            )
         )
 
         row_count = ingredient_count or self._ingredient_count or 1
