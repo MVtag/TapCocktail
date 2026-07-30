@@ -658,86 +658,112 @@ display:
         ikon = id(cocktail_icon).state;
       }
 
-      // Use the stable theme ID first. Emoji are only a fallback because
-      // multiple themes can intentionally share the same emoji.
-      if (tema == "klassisk") {
-        it.image(240, 120, id(klassisk_cocktail_ikon), ImageAlign::CENTER);
-      } else if (tema == "martini") {
-        it.image(240, 120, id(martini_ikon), ImageAlign::CENTER);
-      } else if (tema == "citrus") {
-        it.image(240, 120, id(citrus_ikon), ImageAlign::CENTER);
-      } else if (tema == "lemonade") {
-        it.image(240, 120, id(lemonade_ikon), ImageAlign::CENTER);
-      } else if (tema == "tropisk") {
-        it.image(240, 120, id(tropisk_ikon), ImageAlign::CENTER);
-      } else if (tema == "mango") {
-        it.image(240, 120, id(mango_ikon), ImageAlign::CENTER);
-      } else if (tema == "baer") {
-        it.image(240, 120, id(baer_ikon), ImageAlign::CENTER);
-      } else if (tema == "kirsebaer") {
-        it.image(240, 120, id(kirsebaer_ikon), ImageAlign::CENTER);
-      } else if (tema == "aeble") {
-        it.image(240, 120, id(aeble_ikon), ImageAlign::CENTER);
-      } else if (tema == "frisk_urter") {
-        it.image(240, 120, id(frisk_urter_ikon), ImageAlign::CENTER);
-      } else if (tema == "cremet") {
-        it.image(240, 120, id(cremet_ikon), ImageAlign::CENTER);
-      } else if (tema == "dessert") {
-        it.image(240, 120, id(dessert_ikon), ImageAlign::CENTER);
-      } else if (tema == "fad_oel") {
-        it.image(240, 120, id(fad_oel_ikon), ImageAlign::CENTER);
-      } else if (tema == "frozen") {
-        it.image(240, 120, id(frozen_ikon), ImageAlign::CENTER);
-      } else if (tema == "eksotisk") {
-        it.image(240, 120, id(eksotisk_ikon), ImageAlign::CENTER);
-      } else if (tema == "vinbaseret") {
-        it.image(240, 120, id(vinbaseret_ikon), ImageAlign::CENTER);
-      } else if (tema == "spritz") {
-        it.image(240, 120, id(spritz_ikon), ImageAlign::CENTER);
-      } else if (tema == "mocktail") {
-        it.image(240, 120, id(mocktail_ikon), ImageAlign::CENTER);
-      } else if (tema == "vand_sodavand") {
-        it.image(240, 120, id(vand_sodavand_ikon), ImageAlign::CENTER);
-      } else if (ikon == "🌼") {
-          it.image(240, 120, id(hyldeblomst_ikon), ImageAlign::CENTER);
+      // Match the original display behavior: select by emoji first.
+      // Theme is only used as a fallback for unknown or missing emoji.
+      bool icon_drawn = false;
+
+      if (ikon == "🌼") {
+        it.image(240, 120, id(hyldeblomst_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍹") {
-          it.image(240, 120, id(klassisk_cocktail_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(klassisk_cocktail_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍸") {
-          it.image(240, 120, id(martini_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(martini_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍊") {
-          it.image(240, 120, id(citrus_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(citrus_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍋") {
-          it.image(240, 120, id(lemonade_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(lemonade_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🌺") {
-          it.image(240, 120, id(tropisk_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(tropisk_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🥭") {
-          it.image(240, 120, id(mango_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(mango_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍓") {
-          it.image(240, 120, id(baer_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(baer_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍒") {
-          it.image(240, 120, id(kirsebaer_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(kirsebaer_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍏") {
-          it.image(240, 120, id(aeble_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(aeble_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🌿" || ikon == "🥒") {
-          it.image(240, 120, id(frisk_urter_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(frisk_urter_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🥥") {
-          it.image(240, 120, id(cremet_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(cremet_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "☕") {
-          it.image(240, 120, id(dessert_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(dessert_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍺") {
-          it.image(240, 120, id(fad_oel_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(fad_oel_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🧊") {
-          it.image(240, 120, id(frozen_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(frozen_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🌴") {
-          it.image(240, 120, id(eksotisk_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(eksotisk_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🍷") {
-          it.image(240, 120, id(vinbaseret_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(vinbaseret_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🥂") {
-          it.image(240, 120, id(spritz_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(spritz_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "🚫" || ikon == "🥤") {
-          it.image(240, 120, id(mocktail_ikon), ImageAlign::CENTER);
+        it.image(240, 120, id(mocktail_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
       } else if (ikon == "💧") {
+        it.image(240, 120, id(vand_sodavand_ikon), ImageAlign::CENTER);
+        icon_drawn = true;
+      }
+
+      if (!icon_drawn) {
+        if (tema == "klassisk") {
+          it.image(240, 120, id(klassisk_cocktail_ikon), ImageAlign::CENTER);
+        } else if (tema == "martini") {
+          it.image(240, 120, id(martini_ikon), ImageAlign::CENTER);
+        } else if (tema == "citrus") {
+          it.image(240, 120, id(citrus_ikon), ImageAlign::CENTER);
+        } else if (tema == "lemonade") {
+          it.image(240, 120, id(lemonade_ikon), ImageAlign::CENTER);
+        } else if (tema == "tropisk") {
+          it.image(240, 120, id(tropisk_ikon), ImageAlign::CENTER);
+        } else if (tema == "mango") {
+          it.image(240, 120, id(mango_ikon), ImageAlign::CENTER);
+        } else if (tema == "baer") {
+          it.image(240, 120, id(baer_ikon), ImageAlign::CENTER);
+        } else if (tema == "kirsebaer") {
+          it.image(240, 120, id(kirsebaer_ikon), ImageAlign::CENTER);
+        } else if (tema == "aeble") {
+          it.image(240, 120, id(aeble_ikon), ImageAlign::CENTER);
+        } else if (tema == "frisk_urter") {
+          it.image(240, 120, id(frisk_urter_ikon), ImageAlign::CENTER);
+        } else if (tema == "cremet") {
+          it.image(240, 120, id(cremet_ikon), ImageAlign::CENTER);
+        } else if (tema == "dessert") {
+          it.image(240, 120, id(dessert_ikon), ImageAlign::CENTER);
+        } else if (tema == "fad_oel") {
+          it.image(240, 120, id(fad_oel_ikon), ImageAlign::CENTER);
+        } else if (tema == "frozen") {
+          it.image(240, 120, id(frozen_ikon), ImageAlign::CENTER);
+        } else if (tema == "eksotisk") {
+          it.image(240, 120, id(eksotisk_ikon), ImageAlign::CENTER);
+        } else if (tema == "vinbaseret") {
+          it.image(240, 120, id(vinbaseret_ikon), ImageAlign::CENTER);
+        } else if (tema == "spritz") {
+          it.image(240, 120, id(spritz_ikon), ImageAlign::CENTER);
+        } else if (tema == "mocktail") {
+          it.image(240, 120, id(mocktail_ikon), ImageAlign::CENTER);
+        } else if (tema == "vand_sodavand") {
           it.image(240, 120, id(vand_sodavand_ikon), ImageAlign::CENTER);
+        }
       }
 
       if (id(cocktail_name).has_state()) {
