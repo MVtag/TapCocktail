@@ -12,6 +12,7 @@ Create and maintain recipes directly from the Home Assistant UI, assign a drink 
 - 🗂️ Organize recipes in categories such as cocktails, mocktails and lemonades
 - 🧾 Store between **1 and 12 ingredients** per recipe
 - ⚖️ Calculate ingredient quantities for a glass, 2-litre keg and 9-litre keg
+- 🧮 Calculate finished-drink ABV automatically from each ingredient's amount and alcohol percentage
 - 🎨 Built-in drink themes with matching icons and colours
 - 🌈 Optional custom icon and colour for each recipe
 - 🫧 Store recommended carbonation in Vol. CO₂
@@ -91,6 +92,7 @@ Example:
   "ingredienser": [
     {
       "navn": "Gin",
+      "alkoholprocent": 37.5,
       "glas": "4 cl",
       "2_liter": "40 cl",
       "9_liter": "180 cl"
