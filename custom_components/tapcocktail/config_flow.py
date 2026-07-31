@@ -91,6 +91,8 @@ def _ingredients_to_form(cocktail: dict[str, Any]) -> dict[str, str]:
     for index in range(1, 13):
         item = ingredients[index - 1] if index <= len(ingredients) else {}
         result[f"ingrediens_{index}_navn"] = str(item.get("navn", ""))
+        result[f"ingrediens_{index}_bibliotek"] = str(item.get("bibliotek_id", "manual"))
+        result[f"ingrediens_{index}_overskriv_abv"] = True
         result[f"ingrediens_{index}_alkoholprocent"] = item.get(
             "alkoholprocent", 0
         )
@@ -146,6 +148,8 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
         self._ingredient_count: int = 3
         self._selected_theme: str = "klassisk"
         self._editing: bool = False
+        self._selected_ingredient_id: str | None = None
+        self._ingredient_cache: dict[str, dict[str, Any]] = {}
 
     @property
     def _coordinator(self):
@@ -164,8 +168,74 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
                 "create_cocktail": "Opret cocktail",
                 "edit_cocktail": "Rediger cocktail",
                 "delete_cocktail": "Slet cocktail",
+                "ingredient_library": "Ingrediensbibliotek",
             },
         )
+
+    async def async_step_ingredient_library(self, user_input=None):
+        """Show ingredient library actions."""
+        return self.async_show_menu(
+            step_id="ingredient_library",
+            menu_options={
+                "create_ingredient": "Opret ingrediens",
+                "edit_ingredient": "Rediger ingrediens",
+                "delete_ingredient": "Slet ingrediens",
+            },
+        )
+
+    async def async_step_create_ingredient(self, user_input=None):
+        """Create an ingredient."""
+        if user_input is not None:
+            await self._coordinator.async_save_ingredient(user_input)
+            return self.async_abort(reason="ingredient_created")
+        return self.async_show_form(step_id="create_ingredient", data_schema=self._ingredient_schema())
+
+    async def async_step_edit_ingredient(self, user_input=None):
+        """Select and then edit an ingredient."""
+        ingredients = await self._coordinator.async_list_ingredients()
+        if user_input is not None and "ingredient_id" in user_input:
+            self._selected_ingredient_id = str(user_input["ingredient_id"])
+            return await self.async_step_edit_ingredient_form()
+        return self.async_show_form(
+            step_id="edit_ingredient",
+            data_schema=vol.Schema({vol.Required("ingredient_id"): SelectSelector(SelectSelectorConfig(
+                options=[{"value": i["id"], "label": f'{i["name"]} · {i["abv"]:g} %'} for i in ingredients], sort=True
+            ))}),
+        )
+
+    async def async_step_edit_ingredient_form(self, user_input=None):
+        """Edit the selected ingredient."""
+        ingredients = await self._coordinator.async_list_ingredients()
+        current = next((i for i in ingredients if i["id"] == self._selected_ingredient_id), None)
+        if current is None:
+            return self.async_abort(reason="ingredient_not_found")
+        if user_input is not None:
+            await self._coordinator.async_save_ingredient(user_input, self._selected_ingredient_id)
+            return self.async_abort(reason="ingredient_updated")
+        return self.async_show_form(step_id="edit_ingredient_form", data_schema=self._ingredient_schema(current))
+
+    async def async_step_delete_ingredient(self, user_input=None):
+        """Delete an ingredient after confirmation."""
+        ingredients = await self._coordinator.async_list_ingredients()
+        if user_input is not None:
+            if user_input.get("confirm_delete"):
+                await self._coordinator.async_delete_ingredient(str(user_input["ingredient_id"]))
+                return self.async_abort(reason="ingredient_deleted")
+        return self.async_show_form(step_id="delete_ingredient", data_schema=vol.Schema({
+            vol.Required("ingredient_id"): SelectSelector(SelectSelectorConfig(
+                options=[{"value": i["id"], "label": i["name"]} for i in ingredients], sort=True)),
+            vol.Required("confirm_delete", default=False): BooleanSelector(),
+        }))
+
+    @staticmethod
+    def _ingredient_schema(defaults=None):
+        values = defaults or {}
+        return vol.Schema({
+            vol.Required("id", default=values.get("id", "")): TextSelector(TextSelectorConfig()),
+            vol.Required("name", default=values.get("name", "")): TextSelector(TextSelectorConfig()),
+            vol.Required("abv", default=values.get("abv", 0)): NumberSelector(NumberSelectorConfig(
+                min=0, max=100, step=0.1, mode=NumberSelectorMode.BOX, unit_of_measurement="%")),
+        })
 
     async def async_step_settings(
         self,
@@ -769,8 +839,28 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
         )
 
         row_count = ingredient_count or self._ingredient_count or 1
+        library = await self._coordinator.async_list_ingredients()
+        self._ingredient_cache = {item["id"]: item for item in library}
+        library_options = [{"value": "manual", "label": "Manuel ingrediens"}] + [
+            {"value": item["id"], "label": f'{item["name"]} · {item["abv"]:g} %'}
+            for item in library
+        ]
 
         for index in range(1, row_count + 1):
+            fields[
+                vol.Required(
+                    f"ingrediens_{index}_bibliotek",
+                    default=values.get(f"ingrediens_{index}_bibliotek", "manual"),
+                )
+            ] = SelectSelector(SelectSelectorConfig(options=library_options, sort=False))
+
+            fields[
+                vol.Required(
+                    f"ingrediens_{index}_overskriv_abv",
+                    default=values.get(f"ingrediens_{index}_overskriv_abv", False),
+                )
+            ] = BooleanSelector()
+
             fields[
                 vol.Optional(
                     f"ingrediens_{index}_navn",
@@ -1023,7 +1113,10 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
                 data["brugerdefineret_farve"] = ""
 
         ingredients = []
+        library = self._ingredient_cache
         for index in range(1, self._ingredient_count + 1):
+            library_id = str(data.pop(f"ingrediens_{index}_bibliotek", "manual"))
+            override_abv = bool(data.pop(f"ingrediens_{index}_overskriv_abv", False))
             name = str(data.pop(f"ingrediens_{index}_navn", "")).strip()
             alcohol_percentage = data.pop(
                 f"ingrediens_{index}_alkoholprocent", 0
@@ -1032,11 +1125,18 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
             two_liter = str(data.pop(f"ingrediens_{index}_2l", "")).strip()
             nine_liter = str(data.pop(f"ingrediens_{index}_9l", "")).strip()
 
+            selected = library.get(library_id)
+            if selected is not None:
+                name = str(selected["name"])
+                if not override_abv:
+                    alcohol_percentage = selected["abv"]
+
             if name:
                 ingredients.append(
                     {
                         "navn": name,
                         "alkoholprocent": alcohol_percentage,
+                        **({"bibliotek_id": library_id} if selected is not None else {}),
                         "glas": glass,
                         "2_liter": two_liter,
                         "9_liter": nine_liter,
