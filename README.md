@@ -12,6 +12,9 @@ Create recipes in the Home Assistant UI, assign drinks to up to eight taps, cont
 - Store **1–12 ingredients** per recipe
 - Scale recipes for one glass, 2-litre and 9-litre kegs
 - Calculate finished-drink ABV from ingredient amounts and alcohol percentages
+- Choose ingredients from a reusable library with automatic name and ABV
+- Create, edit and delete your own library ingredients in the integration UI
+- Keep recipe snapshots stable when a library ingredient is changed or deleted
 - Built-in themes, icons and colours, with optional custom values
 - Store CO₂ volume, serving temperature, glass type and serving tips
 - Preset, recommended, custom or unlimited keg shelf life
@@ -65,6 +68,10 @@ Recipes are stored as JSON under:
 ## 🧮 ABV and shelf life
 
 Each ingredient can have an alcohol percentage. TapCocktail calculates the finished ABV from the ingredient amounts, or you can disable automatic calculation and enter ABV manually.
+
+The ingredient library includes common spirits and mixers. Selecting an entry applies its name and alcohol percentage when the recipe is saved. Enable the per-row ABV override to use a different strength for that recipe. Recipes store their own snapshot, so later library changes never alter existing cocktails.
+
+Manage the library from **Settings → Devices & services → TapCocktail → Configure → Ingredient library**. User data is stored in `/config/tapcocktail/ingredients.json`.
 
 Shelf life supports:
 
