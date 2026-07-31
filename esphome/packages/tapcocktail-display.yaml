@@ -548,7 +548,7 @@ display:
 
         it.print(
           240,
-          125,
+          105,
           id(cocktail_font_mellem),
           Color::BLACK,
           TextAlign::CENTER,
@@ -557,7 +557,7 @@ display:
 
         it.print(
           240,
-          185,
+          165,
           id(cocktail_font_stor),
           Color::BLACK,
           TextAlign::CENTER,
@@ -566,7 +566,7 @@ display:
 
         if (id(cocktail_name).has_state()) {
           std::string navn = id(cocktail_name).state;
-          auto *navne_font = id(cocktail_font_normal);
+          auto *navne_font = id(cocktail_font_mellem);
 
           int x1, y1, text_width, text_height;
 
@@ -583,12 +583,28 @@ display:
           );
 
           if (text_width > 390) {
+            navne_font = id(cocktail_font_normal);
+
+            it.get_text_bounds(
+              0,
+              0,
+              navn.c_str(),
+              navne_font,
+              TextAlign::TOP_LEFT,
+              &x1,
+              &y1,
+              &text_width,
+              &text_height
+            );
+          }
+
+          if (text_width > 390) {
             navne_font = id(karbonering_font_lille);
           }
 
           it.print(
             240,
-            280,
+            255,
             navne_font,
             Color::BLACK,
             TextAlign::CENTER,
@@ -615,7 +631,7 @@ display:
 
           it.print(
             240,
-            330,
+            310,
             id(info_font),
             shelf_color,
             TextAlign::CENTER,
@@ -626,7 +642,7 @@ display:
             int overdue = -remaining;
             it.printf(
               240,
-              365,
+              345,
               id(karbonering_font_lille),
               shelf_color,
               TextAlign::CENTER,
@@ -637,7 +653,7 @@ display:
           } else if (remaining == 0) {
             it.print(
               240,
-              365,
+              345,
               id(karbonering_font_lille),
               shelf_color,
               TextAlign::CENTER,
@@ -646,7 +662,7 @@ display:
           } else {
             it.printf(
               240,
-              365,
+              345,
               id(karbonering_font_lille),
               shelf_color,
               TextAlign::CENTER,
@@ -659,7 +675,7 @@ display:
 
         it.print(
           240,
-          420,
+          400,
           id(info_font),
           Color::BLACK,
           TextAlign::CENTER,
