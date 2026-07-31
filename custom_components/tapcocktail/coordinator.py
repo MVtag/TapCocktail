@@ -8,6 +8,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 from .carbonation import CarbonationEngine
 from .cocktail_manager import CocktailManager
+from .ingredient_library import IngredientLibrary
 from .const import (
     COCKTAIL_PATH,
     DOMAIN,
@@ -132,6 +133,7 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
         self.taps_store = taps_store
         self.max_taps = max_taps
         self.cocktail_manager = CocktailManager(COCKTAIL_PATH)
+        self.ingredient_library = IngredientLibrary()
 
         # Genskab gemte haner (status, karbonering, tider) - fald tilbage
         # til en tom hane for dem der ikke findes i det gemte data endnu
@@ -264,6 +266,20 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
         return await self.hass.async_add_executor_job(
             self.cocktail_manager.list_categories
         )
+
+    async def async_list_ingredients(self) -> list[dict]:
+        """Return ingredient-library entries."""
+        return await self.hass.async_add_executor_job(self.ingredient_library.load)
+
+    async def async_save_ingredient(self, data: dict, original_id: str | None = None) -> dict:
+        """Create or update one library ingredient."""
+        return await self.hass.async_add_executor_job(
+            lambda: self.ingredient_library.upsert(data, original_id)
+        )
+
+    async def async_delete_ingredient(self, item_id: str) -> bool:
+        """Delete one library ingredient; recipe snapshots remain unchanged."""
+        return await self.hass.async_add_executor_job(self.ingredient_library.delete, item_id)
 
     async def async_save_cocktail(
         self,
