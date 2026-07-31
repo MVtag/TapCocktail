@@ -1,5 +1,6 @@
 DOMAIN = "tapcocktail"
 COCKTAIL_PATH = "/config/cocktails"
+INGREDIENT_LIBRARY_PATH = "/config/tapcocktail/ingredients.json"
 
 STORAGE_VERSION = 1
 STORAGE_KEY = f"{DOMAIN}_selections"
