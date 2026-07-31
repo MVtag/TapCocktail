@@ -19,9 +19,22 @@
           "settings": "Indstillinger",
           "create_cocktail": "Opret cocktail",
           "edit_cocktail": "Rediger cocktail",
-          "delete_cocktail": "Slet cocktail"
+          "delete_cocktail": "Slet cocktail",
+          "ingredient_library": "Ingrediensbibliotek"
         }
       },
+      "ingredient_library": {
+        "title": "Ingrediensbibliotek",
+        "menu_options": {
+          "create_ingredient": "Opret ingrediens",
+          "edit_ingredient": "Rediger ingrediens",
+          "delete_ingredient": "Slet ingrediens"
+        }
+      },
+      "create_ingredient": {"title": "Opret ingrediens", "data": {"id": "ID", "name": "Navn", "abv": "Alkoholprocent"}},
+      "edit_ingredient": {"title": "Vælg ingrediens", "data": {"ingredient_id": "Ingrediens"}},
+      "edit_ingredient_form": {"title": "Rediger ingrediens", "data": {"id": "ID", "name": "Navn", "abv": "Alkoholprocent"}},
+      "delete_ingredient": {"title": "Slet ingrediens", "data": {"ingredient_id": "Ingrediens", "confirm_delete": "Bekræft sletning"}},
       "settings": {
         "title": "Antal haner",
         "description": "Ændr antallet af aktive haner.",
@@ -173,7 +186,11 @@
       "cocktail_updated": "{name} er opdateret.",
       "cocktail_deleted": "{name} er slettet.",
       "cocktail_not_found": "Cocktailen blev ikke fundet.",
-      "no_cocktails": "Der er ingen cocktails at vælge."
+      "no_cocktails": "Der er ingen cocktails at vælge.",
+      "ingredient_created": "Ingrediensen er oprettet.",
+      "ingredient_updated": "Ingrediensen er opdateret.",
+      "ingredient_deleted": "Ingrediensen er slettet.",
+      "ingredient_not_found": "Ingrediensen blev ikke fundet."
     }
   }
 }
