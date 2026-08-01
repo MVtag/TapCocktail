@@ -11,6 +11,7 @@ from .const import (
     TAPS_STORAGE_KEY,
 )
 from .coordinator import TapCocktailCoordinator
+from .websocket_api import async_register_websocket_api
 
 
 async def async_setup_entry(
@@ -43,6 +44,7 @@ async def async_setup_entry(
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = coordinator
+    async_register_websocket_api(hass)
 
     await hass.config_entries.async_forward_entry_setups(
         entry,
