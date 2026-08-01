@@ -49,14 +49,18 @@ class IngredientLibrary:
     def upsert(self, ingredient: dict[str, Any], original_id: str | None = None) -> dict[str, Any]:
         ingredients = self.load()
         item_id = str(ingredient["id"]).strip().lower().replace(" ", "_")
+        icon = str(ingredient.get("icon") or "").strip()
         saved = {
             "id": item_id,
             "name": str(ingredient["name"]).strip(),
             "abv": float(ingredient["abv"]),
             "category": str(ingredient.get("category") or "ukategoriseret").strip(),
+            "icon": icon,
         }
         if not saved["name"] or not 0 <= saved["abv"] <= 100:
             raise ValueError("Ingredient name and ABV must be valid.")
+        if icon and not icon.startswith("mdi:"):
+            raise ValueError("Ingredient icon must use the mdi: format.")
         ingredients = [item for item in ingredients if item.get("id") not in {item_id, original_id}]
         ingredients.append(saved)
         ingredients.sort(key=lambda item: str(item.get("name", "")).casefold())
