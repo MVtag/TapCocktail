@@ -73,6 +73,7 @@ async def websocket_get_library(hass, connection, msg) -> None:
     try:
         coordinator = _coordinator(hass, msg.get("entry_id"))
         ingredients = await _ingredients(coordinator)
+        categories = await coordinator.async_get_categories()
     except LookupError as err:
         _send_error(connection, msg["id"], ERR_NOT_CONFIGURED, err)
         return
@@ -85,6 +86,7 @@ async def websocket_get_library(hass, connection, msg) -> None:
         {
             "cocktails": coordinator.get_all_cocktails(),
             "ingredients": ingredients,
+            "categories": categories,
         },
     )
 
@@ -235,6 +237,79 @@ async def websocket_delete_ingredient(hass, connection, msg) -> None:
     connection.send_result(msg["id"], {"deleted": True})
 
 
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "tapcocktail/category/save",
+        vol.Required("kind"): vol.In(("cocktail", "ingredient")),
+        vol.Required("data"): dict,
+        vol.Optional("original_id"): str,
+        vol.Optional("entry_id"): str,
+    }
+)
+@websocket_api.require_admin
+@websocket_api.async_response
+async def websocket_save_category(hass, connection, msg) -> None:
+    """Create or rename a cocktail or ingredient category."""
+    try:
+        coordinator = _coordinator(hass, msg.get("entry_id"))
+        saved = await coordinator.async_save_category(
+            msg["kind"],
+            msg["data"],
+            original_id=msg.get("original_id"),
+        )
+    except LookupError as err:
+        _send_error(connection, msg["id"], ERR_NOT_CONFIGURED, err)
+        return
+    except (TypeError, ValueError) as err:
+        _send_error(connection, msg["id"], ERR_VALIDATION, err)
+        return
+    connection.send_result(msg["id"], saved)
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "tapcocktail/category/delete",
+        vol.Required("kind"): vol.In(("cocktail", "ingredient")),
+        vol.Required("category_id"): str,
+        vol.Required("confirm"): bool,
+        vol.Optional("entry_id"): str,
+    }
+)
+@websocket_api.require_admin
+@websocket_api.async_response
+async def websocket_delete_category(hass, connection, msg) -> None:
+    """Delete an unused category after explicit confirmation."""
+    if not msg["confirm"]:
+        _send_error(
+            connection,
+            msg["id"],
+            ERR_CONFIRMATION,
+            "Deletion must be confirmed.",
+        )
+        return
+    try:
+        coordinator = _coordinator(hass, msg.get("entry_id"))
+        deleted = await coordinator.async_delete_category(
+            msg["kind"],
+            msg["category_id"],
+        )
+    except LookupError as err:
+        _send_error(connection, msg["id"], ERR_NOT_CONFIGURED, err)
+        return
+    except ValueError as err:
+        _send_error(connection, msg["id"], ERR_VALIDATION, err)
+        return
+    if not deleted:
+        _send_error(
+            connection,
+            msg["id"],
+            ERR_NOT_FOUND,
+            "Category not found.",
+        )
+        return
+    connection.send_result(msg["id"], {"deleted": True})
+
 def async_register_websocket_api(hass: HomeAssistant) -> None:
     """Register Library Card commands once per Home Assistant runtime."""
     registration_key = f"{DOMAIN}_websocket_registered"
@@ -247,6 +322,8 @@ def async_register_websocket_api(hass: HomeAssistant) -> None:
         websocket_delete_cocktail,
         websocket_save_ingredient,
         websocket_delete_ingredient,
+        websocket_save_category,
+        websocket_delete_category,
     ):
         websocket_api.async_register_command(hass, command)
 
