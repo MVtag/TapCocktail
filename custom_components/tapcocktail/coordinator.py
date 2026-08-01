@@ -7,6 +7,7 @@ from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
 from .carbonation import CarbonationEngine
+from .category_library import CategoryLibrary
 from .cocktail_manager import CocktailManager
 from .ingredient_library import IngredientLibrary
 from .const import (
@@ -134,6 +135,7 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
         self.max_taps = max_taps
         self.cocktail_manager = CocktailManager(COCKTAIL_PATH)
         self.ingredient_library = IngredientLibrary()
+        self.category_library = CategoryLibrary()
 
         # Genskab gemte haner (status, karbonering, tider) - fald tilbage
         # til en tom hane for dem der ikke findes i det gemte data endnu
@@ -265,6 +267,68 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
         """Return cocktail categories without blocking Home Assistant."""
         return await self.hass.async_add_executor_job(
             self.cocktail_manager.list_categories
+        )
+
+    async def async_get_categories(self) -> dict[str, list[dict]]:
+        """Return user-defined and currently used categories."""
+        cocktail_used = await self.hass.async_add_executor_job(
+            self.cocktail_manager.categories_in_use
+        )
+        ingredient_used = await self.hass.async_add_executor_job(
+            self.ingredient_library.categories_in_use
+        )
+        return {
+            "cocktail": await self.hass.async_add_executor_job(
+                self.category_library.list, "cocktail", cocktail_used
+            ),
+            "ingredient": await self.hass.async_add_executor_job(
+                self.category_library.list, "ingredient", ingredient_used
+            ),
+        }
+
+    async def async_save_category(
+        self,
+        kind: str,
+        data: dict,
+        original_id: str | None = None,
+    ) -> dict:
+        """Create or rename a category and migrate assigned items."""
+        saved = await self.hass.async_add_executor_job(
+            lambda: self.category_library.upsert(kind, data, original_id)
+        )
+        if original_id and original_id != saved["id"]:
+            if kind == "cocktail":
+                await self.hass.async_add_executor_job(
+                    self.cocktail_manager.rename_category,
+                    original_id,
+                    saved["id"],
+                )
+                await self.async_request_refresh()
+            elif kind == "ingredient":
+                await self.hass.async_add_executor_job(
+                    self.ingredient_library.rename_category,
+                    original_id,
+                    saved["id"],
+                )
+        return saved
+
+    async def async_delete_category(self, kind: str, category_id: str) -> bool:
+        """Delete an unused category."""
+        if kind == "cocktail":
+            used = await self.hass.async_add_executor_job(
+                self.cocktail_manager.categories_in_use
+            )
+        elif kind == "ingredient":
+            used = await self.hass.async_add_executor_job(
+                self.ingredient_library.categories_in_use
+            )
+        else:
+            raise ValueError("Ukendt kategoritype.")
+        return await self.hass.async_add_executor_job(
+            self.category_library.delete,
+            kind,
+            category_id,
+            used,
         )
 
     async def async_list_ingredients(self) -> list[dict]:
