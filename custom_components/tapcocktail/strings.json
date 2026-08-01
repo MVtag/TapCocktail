@@ -31,10 +31,35 @@
           "delete_ingredient": "Slet ingrediens"
         }
       },
-      "create_ingredient": {"title": "Opret ingrediens", "data": {"id": "ID", "name": "Navn", "abv": "Alkoholprocent"}},
-      "edit_ingredient": {"title": "Vælg ingrediens", "data": {"ingredient_id": "Ingrediens"}},
-      "edit_ingredient_form": {"title": "Rediger ingrediens", "data": {"id": "ID", "name": "Navn", "abv": "Alkoholprocent"}},
-      "delete_ingredient": {"title": "Slet ingrediens", "data": {"ingredient_id": "Ingrediens", "confirm_delete": "Bekræft sletning"}},
+      "create_ingredient": {
+        "title": "Opret ingrediens",
+        "data": {
+          "id": "ID",
+          "name": "Navn",
+          "abv": "Alkoholprocent"
+        }
+      },
+      "edit_ingredient": {
+        "title": "Vælg ingrediens",
+        "data": {
+          "ingredient_id": "Ingrediens"
+        }
+      },
+      "edit_ingredient_form": {
+        "title": "Rediger ingrediens",
+        "data": {
+          "id": "ID",
+          "name": "Navn",
+          "abv": "Alkoholprocent"
+        }
+      },
+      "delete_ingredient": {
+        "title": "Slet ingrediens",
+        "data": {
+          "ingredient_id": "Ingrediens",
+          "confirm_delete": "Bekræft sletning"
+        }
+      },
       "settings": {
         "title": "Antal haner",
         "description": "Ændr antallet af aktive haner.",
@@ -105,7 +130,31 @@
           "ingrediens_6_9l": "Ingrediens 6 – 9 liter",
           "brug_tema_farve": "Brug temaets standardfarve",
           "automatisk_beregning": "Beregn automatisk 2 og 9 liter",
-          "beregn_fra": "Beregn ud fra"
+          "beregn_fra": "Beregn ud fra",
+          "ingrediens_1_bibliotek": "Ingrediens 1 – vælg fra bibliotek",
+          "ingrediens_1_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_2_bibliotek": "Ingrediens 2 – vælg fra bibliotek",
+          "ingrediens_2_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_3_bibliotek": "Ingrediens 3 – vælg fra bibliotek",
+          "ingrediens_3_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_4_bibliotek": "Ingrediens 4 – vælg fra bibliotek",
+          "ingrediens_4_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_5_bibliotek": "Ingrediens 5 – vælg fra bibliotek",
+          "ingrediens_5_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_6_bibliotek": "Ingrediens 6 – vælg fra bibliotek",
+          "ingrediens_6_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_7_bibliotek": "Ingrediens 7 – vælg fra bibliotek",
+          "ingrediens_7_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_8_bibliotek": "Ingrediens 8 – vælg fra bibliotek",
+          "ingrediens_8_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_9_bibliotek": "Ingrediens 9 – vælg fra bibliotek",
+          "ingrediens_9_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_10_bibliotek": "Ingrediens 10 – vælg fra bibliotek",
+          "ingrediens_10_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_11_bibliotek": "Ingrediens 11 – vælg fra bibliotek",
+          "ingrediens_11_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_12_bibliotek": "Ingrediens 12 – vælg fra bibliotek",
+          "ingrediens_12_overskriv_abv": "Overskriv alkoholprocent"
         }
       },
       "delete_cocktail": {
@@ -164,7 +213,31 @@
           "ingrediens_6_9l": "Ingrediens 6 – 9 liter",
           "brug_tema_farve": "Brug temaets standardfarve",
           "automatisk_beregning": "Beregn automatisk 2 og 9 liter",
-          "beregn_fra": "Beregn ud fra"
+          "beregn_fra": "Beregn ud fra",
+          "ingrediens_1_bibliotek": "Ingrediens 1 – vælg fra bibliotek",
+          "ingrediens_1_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_2_bibliotek": "Ingrediens 2 – vælg fra bibliotek",
+          "ingrediens_2_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_3_bibliotek": "Ingrediens 3 – vælg fra bibliotek",
+          "ingrediens_3_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_4_bibliotek": "Ingrediens 4 – vælg fra bibliotek",
+          "ingrediens_4_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_5_bibliotek": "Ingrediens 5 – vælg fra bibliotek",
+          "ingrediens_5_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_6_bibliotek": "Ingrediens 6 – vælg fra bibliotek",
+          "ingrediens_6_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_7_bibliotek": "Ingrediens 7 – vælg fra bibliotek",
+          "ingrediens_7_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_8_bibliotek": "Ingrediens 8 – vælg fra bibliotek",
+          "ingrediens_8_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_9_bibliotek": "Ingrediens 9 – vælg fra bibliotek",
+          "ingrediens_9_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_10_bibliotek": "Ingrediens 10 – vælg fra bibliotek",
+          "ingrediens_10_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_11_bibliotek": "Ingrediens 11 – vælg fra bibliotek",
+          "ingrediens_11_overskriv_abv": "Overskriv alkoholprocent",
+          "ingrediens_12_bibliotek": "Ingrediens 12 – vælg fra bibliotek",
+          "ingrediens_12_overskriv_abv": "Overskriv alkoholprocent"
         }
       },
       "edit_ingredient_count": {
