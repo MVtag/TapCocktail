@@ -65,10 +65,10 @@ def _send_error(connection, msg_id: int, code: str, error: Exception | str) -> N
         vol.Optional("entry_id"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def websocket_get_library(hass, connection, msg) -> None:
     """Return cocktail and ingredient libraries in one response."""
-    connection.require_admin()
 
     try:
         coordinator = _coordinator(hass, msg.get("entry_id"))
@@ -97,10 +97,10 @@ async def websocket_get_library(hass, connection, msg) -> None:
         vol.Optional("entry_id"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def websocket_save_cocktail(hass, connection, msg) -> None:
     """Create or update a cocktail through the existing manager."""
-    connection.require_admin()
 
     try:
         coordinator = _coordinator(hass, msg.get("entry_id"))
@@ -126,10 +126,10 @@ async def websocket_save_cocktail(hass, connection, msg) -> None:
         vol.Optional("entry_id"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def websocket_delete_cocktail(hass, connection, msg) -> None:
     """Delete a cocktail after an explicit confirmation."""
-    connection.require_admin()
 
     if not msg["confirm"]:
         _send_error(
@@ -170,10 +170,10 @@ async def websocket_delete_cocktail(hass, connection, msg) -> None:
         vol.Optional("entry_id"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def websocket_save_ingredient(hass, connection, msg) -> None:
     """Create or update an ingredient through the existing manager."""
-    connection.require_admin()
 
     try:
         coordinator = _coordinator(hass, msg.get("entry_id"))
@@ -199,10 +199,10 @@ async def websocket_save_ingredient(hass, connection, msg) -> None:
         vol.Optional("entry_id"): str,
     }
 )
+@websocket_api.require_admin
 @websocket_api.async_response
 async def websocket_delete_ingredient(hass, connection, msg) -> None:
     """Delete an ingredient after an explicit confirmation."""
-    connection.require_admin()
 
     if not msg["confirm"]:
         _send_error(
