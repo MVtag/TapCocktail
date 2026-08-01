@@ -313,6 +313,26 @@ class CocktailManager:
             if p.is_dir() and not p.name.startswith(".")
         )
 
+    def categories_in_use(self) -> set[str]:
+        """Return category folder IDs that contain cocktails."""
+        self.root.mkdir(parents=True, exist_ok=True)
+        return {
+            path.parent.name
+            for path in self.root.rglob("*.json")
+        }
+
+    def rename_category(self, original_id: str, new_id: str) -> None:
+        """Rename a cocktail category folder without overwriting another."""
+        original = self.root / _normalise_category(original_id)
+        target = self.root / _normalise_category(new_id)
+        if not original.exists() or original.resolve() == target.resolve():
+            return
+        if target.exists():
+            raise CocktailValidationError(
+                "Der findes allerede cocktails i den nye kategori."
+            )
+        original.rename(target)
+
     def get_cocktail_file(self, cocktail_id: str) -> Path | None:
         safe_id = _slugify(cocktail_id)
         for file_path in self.root.rglob("*.json"):
