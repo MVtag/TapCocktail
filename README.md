@@ -23,7 +23,8 @@ Create recipes in the Home Assistant UI, assign drinks to up to eight taps, cont
 - Create, edit and delete your own library ingredients in the integration UI
 - Keep recipe snapshots stable when a library ingredient is changed or deleted
 - Built-in themes, icons and colours, with optional custom values
-- Store CO₂ volume, serving temperature, glass type and serving tips
+- Store CO₂ volume, recommended serving temperature, glass type and serving tips
+- Select an optional live temperature sensor independently for each tap
 - Preset, recommended, custom or unlimited keg shelf life
 - Restore tap selections and carbonation state after restarts
 - Danish and English translations
@@ -33,7 +34,13 @@ Create recipes in the Home Assistant UI, assign drinks to up to eight taps, cont
 
 ## 🚰 Tap management
 
-Each tap provides a drink selector, a 2/24/48-hour carbonation selector, start and stop buttons, status, progress, remaining time, expected finish time and time on tap. The selected-drink sensor exposes recipe data including ABV, CO₂, temperature, colour, icon, ingredients and shelf-life status.
+Each tap provides a drink selector, a 2/24/48-hour carbonation selector, start and stop buttons, status, progress, remaining time, expected finish time and time on tap. The selected-drink sensor exposes recipe data including ABV, CO₂, recommended temperature, colour, icon, ingredients and shelf-life status.
+
+### Live temperature per tap
+
+Open **Settings → Devices & services → TapCocktail → Configure** to select an optional temperature sensor for each enabled tap. Every tap can use a different Home Assistant sensor. The selected sensor entity is exposed on that tap's TapCocktail sensor for compatible dashboards.
+
+With [TapCocktail Card v1.4.0 or newer](https://github.com/MVtag/tapcocktail-card), the card shows the measured and recommended temperatures together, for example **`4.2 / 3 °C`**. If no sensor is selected, or its state is unknown or unavailable, the card continues to show only the recommended temperature.
 
 ## 📦 Installation
 
@@ -72,13 +79,13 @@ Recipes are stored as JSON under:
 /config/cocktails/<category>/
 ```
 
-## 🧮 ABV and shelf life
+## 🧮 Ingredient library, ABV and shelf life
 
-Each ingredient can have an alcohol percentage. TapCocktail calculates the finished ABV from the ingredient amounts, or you can disable automatic calculation and enter ABV manually.
+The reusable ingredient library includes common spirits and mixers, and you can create, edit or delete your own entries from **Settings → Devices & services → TapCocktail → Configure → Ingredient library**. Each ingredient can store a name and alcohol percentage.
 
-The ingredient library includes common spirits and mixers. Selecting an entry applies its name and alcohol percentage when the recipe is saved. Enable the per-row ABV override to use a different strength for that recipe. Recipes store their own snapshot, so later library changes never alter existing cocktails.
+When creating or editing a cocktail, select library entries in any of its 1–12 ingredient rows. TapCocktail copies the ingredient name and ABV into the recipe and calculates the finished-drink ABV from all ingredient amounts. Enable the per-row ABV override when a specific bottle has a different strength, or disable automatic calculation to enter the cocktail's final ABV manually.
 
-Manage the library from **Settings → Devices & services → TapCocktail → Configure → Ingredient library**. User data is stored in `/config/tapcocktail/ingredients.json`.
+Recipes keep an independent snapshot of their ingredients. Editing or deleting a library entry therefore never changes cocktails that were already saved. User-created library data is stored in `/config/tapcocktail/ingredients.json`.
 
 Shelf life supports:
 
@@ -157,10 +164,10 @@ For every enabled tap, TapCocktail creates:
 
 ## 🗺️ Planned features
 
-- Keg pressure and temperature sensors
+- Keg pressure sensors
 - Remaining-volume estimation
 - Drink and serving statistics
-- Ingredient library, pricing and stock management
+- Ingredient pricing and stock management
 
 ## ❤️ Contributing
 
