@@ -244,6 +244,11 @@ class TapCocktailCoordinator(DataUpdateCoordinator):
         current = self.get_tap(tap)
 
         if current.get("cocktail") == cocktail_id:
+            selection_key = f"select.hane_{tap}_cocktail"
+            if self.stored_selections.get(selection_key) != option:
+                self.stored_selections[selection_key] = option
+                await self.store.async_save(self.stored_selections)
+                self.async_set_updated_data(self.data or {})
             return
 
         new_state = _new_tap_state()
