@@ -130,6 +130,7 @@ class TapCocktailHaneSensor(TapCocktailTapSensorBase):
     ) -> None:
         super().__init__(coordinator, hane)
 
+        self._hass = hass
         self._temperature_sensor = temperature_sensor
         self._attr_name = f"TapCocktail Hane {hane}"
         self._attr_unique_id = f"tapcocktail_hane_{hane}"
@@ -175,6 +176,32 @@ class TapCocktailHaneSensor(TapCocktailTapSensorBase):
 
         if self._temperature_sensor:
             attributes["temperatursensor"] = self._temperature_sensor
+            temperature_state = self._hass.states.get(self._temperature_sensor)
+
+            if (
+                temperature_state is not None
+                and temperature_state.state not in ("unknown", "unavailable")
+            ):
+                try:
+                    current_temperature = float(temperature_state.state)
+                except (TypeError, ValueError):
+                    pass
+                else:
+                    unit = temperature_state.attributes.get(
+                        "unit_of_measurement", "°C"
+                    )
+
+                    if unit == "°F":
+                        current_temperature = (
+                            current_temperature - 32
+                        ) * 5 / 9
+                    elif unit == "K":
+                        current_temperature -= 273.15
+
+                    attributes["aktuel_temperatur"] = round(
+                        current_temperature, 1
+                    )
+                    attributes["aktuel_temperatur_enhed"] = "°C"
 
         # Expose flat shelf-life attributes for dashboards, automations and
         # low-power displays that cannot parse the nested recipe object.
