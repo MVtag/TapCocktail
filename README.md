@@ -1,5 +1,12 @@
 # 🍹 TapCocktail
 
+[![HACS Default](https://img.shields.io/badge/HACS-Default-41BDF5?style=flat-square&logo=home-assistant-community-store)](https://github.com/hacs/default)
+[![Latest release](https://img.shields.io/github/v/release/MVtag/TapCocktail?style=flat-square)](https://github.com/MVtag/TapCocktail/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/MVtag/TapCocktail/total?style=flat-square)](https://github.com/MVtag/TapCocktail/releases)
+[![GitHub stars](https://img.shields.io/github/stars/MVtag/TapCocktail?style=flat-square)](https://github.com/MVtag/TapCocktail/stargazers)
+[![Open issues](https://img.shields.io/github/issues/MVtag/TapCocktail?style=flat-square)](https://github.com/MVtag/TapCocktail/issues)
+[![License](https://img.shields.io/github/license/MVtag/TapCocktail?style=flat-square)](https://github.com/MVtag/TapCocktail/blob/main/LICENSE)
+
 **TapCocktail** is a custom Home Assistant integration for managing cocktails, mocktails, lemonades and other drinks served from draft taps and Cornelius kegs.
 
 Create recipes in the Home Assistant UI, assign drinks to up to eight taps, control carbonation, track shelf life and show the current drink on dashboards and an optional round ESPHome display.
