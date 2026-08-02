@@ -83,6 +83,12 @@ sensor:
     internal: true
 
   - platform: homeassistant
+    id: current_temperature
+    entity_id: sensor.tapcocktail_hane_${tap}
+    attribute: aktuel_temperatur
+    internal: true
+
+  - platform: homeassistant
     id: shelf_life_remaining_days
     entity_id: sensor.tapcocktail_hane_${tap}
     attribute: holdbarhed_resterende_dage
@@ -174,6 +180,13 @@ font:
   - file: "gfonts://Roboto@700"
     id: info_font
     size: 27
+    bpp: 4
+    glyphsets:
+      - GF_Latin_Core
+
+  - file: "gfonts://Roboto@700"
+    id: temperature_info_font
+    size: 23
     bpp: 4
     glyphsets:
       - GF_Latin_Core
@@ -968,24 +981,51 @@ display:
         );
       }
 
-      // Temperatur
+      // Temperatur: målt / anbefalet. Falder tilbage til kun anbefalet.
       if (id(cocktail_temperature).has_state()) {
         it.image(
-          340,
+          315,
           320,
           id(temperatur_ikon),
           ImageAlign::CENTER
         );
 
-        it.printf(
-          365,
-          320,
-          id(info_font),
-          Color::BLACK,
-          TextAlign::CENTER_LEFT,
-          "%.0f °C",
-          id(cocktail_temperature).state
-        );
+        if (id(current_temperature).has_state()) {
+          char measured_temperature[12];
+          snprintf(
+            measured_temperature,
+            sizeof(measured_temperature),
+            "%.1f",
+            id(current_temperature).state
+          );
+
+          for (char *character = measured_temperature; *character; character++) {
+            if (*character == '.') {
+              *character = ',';
+            }
+          }
+
+          it.printf(
+            340,
+            320,
+            id(temperature_info_font),
+            Color::BLACK,
+            TextAlign::CENTER_LEFT,
+            "%s / %.0f °C",
+            measured_temperature,
+            id(cocktail_temperature).state
+          );
+        } else {
+          it.printf(
+            340,
+            320,
+            id(info_font),
+            Color::BLACK,
+            TextAlign::CENTER_LEFT,
+            "%.0f °C",
+            id(cocktail_temperature).state
+          );
+        }
       }
 
       // Glastype
