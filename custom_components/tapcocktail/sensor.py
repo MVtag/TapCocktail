@@ -14,6 +14,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    CONF_TEMPERATURE_SENSOR_PREFIX,
     DOMAIN,
     TAP_STATUS_CARBONATING,
     TAP_STATUS_IDLE,
@@ -39,7 +40,14 @@ async def async_setup_entry(
         tap = str(tap_number)
         entities.extend(
             [
-                TapCocktailHaneSensor(coordinator, hass, tap),
+                TapCocktailHaneSensor(
+                    coordinator,
+                    hass,
+                    tap,
+                    entry.options.get(
+                        f"{CONF_TEMPERATURE_SENSOR_PREFIX}_{tap}"
+                    ),
+                ),
                 TapCocktailStatusSensor(coordinator, tap),
                 TapCocktailProgressSensor(coordinator, tap),
                 TapCocktailRemainingSensor(coordinator, tap),
@@ -118,9 +126,11 @@ class TapCocktailHaneSensor(TapCocktailTapSensorBase):
         coordinator: TapCocktailCoordinator,
         hass: HomeAssistant,
         hane: str,
+        temperature_sensor: str | None,
     ) -> None:
         super().__init__(coordinator, hane)
 
+        self._temperature_sensor = temperature_sensor
         self._attr_name = f"TapCocktail Hane {hane}"
         self._attr_unique_id = f"tapcocktail_hane_{hane}"
 
@@ -162,6 +172,9 @@ class TapCocktailHaneSensor(TapCocktailTapSensorBase):
         attributes["bubble_speed"] = round(6 / co2, 1)
         attributes["bubble_amount"] = round(co2 * 20)
         attributes["hane"] = self.hane
+
+        if self._temperature_sensor:
+            attributes["temperatursensor"] = self._temperature_sensor
 
         # Expose flat shelf-life attributes for dashboards, automations and
         # low-power displays that cannot parse the nested recipe object.
