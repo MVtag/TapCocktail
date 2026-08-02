@@ -37,6 +37,7 @@ Mangopuré | 3 cl | 30 cl | 135 cl
 Limesaft | 2 cl | 20 cl | 90 cl"""
 from .const import (
     CONF_MAX_TAPS,
+    CONF_TEMPERATURE_SENSOR_PREFIX,
     DEFAULT_MAX_TAPS,
     DOMAIN,
     MAX_SUPPORTED_TAPS,
@@ -66,6 +67,55 @@ def _tap_schema(default: int) -> vol.Schema:
             ): vol.In(choices),
         }
     )
+
+
+def _temperature_sensor_key(tap_number: int) -> str:
+    """Return the option key for a tap's temperature sensor."""
+    return f"{CONF_TEMPERATURE_SENSOR_PREFIX}_{tap_number}"
+
+
+def _settings_schema(
+    max_taps: int,
+    options: dict[str, Any],
+) -> vol.Schema:
+    """Return settings for active taps and their optional temperature sensors."""
+    fields: dict[Any, Any] = {
+        vol.Required(
+            CONF_MAX_TAPS,
+            default=max_taps,
+        ): vol.In(
+            {
+                tap_count: (
+                    f"{tap_count} hane"
+                    if tap_count == 1
+                    else f"{tap_count} haner"
+                )
+                for tap_count in range(
+                    MIN_TAPS,
+                    MAX_SUPPORTED_TAPS + 1,
+                )
+            }
+        ),
+    }
+
+    for tap_number in range(1, max_taps + 1):
+        key = _temperature_sensor_key(tap_number)
+        current_sensor = options.get(key)
+        marker = (
+            vol.Optional(key, default=current_sensor)
+            if current_sensor
+            else vol.Optional(key)
+        )
+        fields[marker] = selector(
+            {
+                "entity": {
+                    "domain": "sensor",
+                    "device_class": "temperature",
+                }
+            }
+        )
+
+    return vol.Schema(fields)
 
 
 def _hex_to_rgb(value: str | None) -> list[int]:
@@ -260,6 +310,14 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
                 ),
             }
 
+            for tap_number in range(1, current + 1):
+                key = _temperature_sensor_key(tap_number)
+                selected_sensor = user_input.get(key)
+                if selected_sensor:
+                    new_options[key] = str(selected_sensor)
+                else:
+                    new_options.pop(key, None)
+
             self.hass.config_entries.async_update_entry(
                 self.config_entry,
                 options=new_options,
@@ -272,7 +330,10 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
 
         return self.async_show_form(
             step_id="settings",
-            data_schema=_tap_schema(current),
+            data_schema=_settings_schema(
+                current,
+                self.config_entry.options,
+            ),
         )
 
     async def async_step_create_cocktail(
