@@ -61,10 +61,18 @@
         }
       },
       "settings": {
-        "title": "Antal haner",
-        "description": "Ændr antallet af aktive haner.",
+        "title": "Haneindstillinger",
+        "description": "Vælg antal aktive haner og en valgfri temperatursensor til hver hane.",
         "data": {
-          "max_taps": "Antal aktive haner"
+          "max_taps": "Antal aktive haner",
+          "temperature_sensor_hane_1": "Temperatursensor – Hane 1",
+          "temperature_sensor_hane_2": "Temperatursensor – Hane 2",
+          "temperature_sensor_hane_3": "Temperatursensor – Hane 3",
+          "temperature_sensor_hane_4": "Temperatursensor – Hane 4",
+          "temperature_sensor_hane_5": "Temperatursensor – Hane 5",
+          "temperature_sensor_hane_6": "Temperatursensor – Hane 6",
+          "temperature_sensor_hane_7": "Temperatursensor – Hane 7",
+          "temperature_sensor_hane_8": "Temperatursensor – Hane 8"
         }
       },
       "create_cocktail": {
