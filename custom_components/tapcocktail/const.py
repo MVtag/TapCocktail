@@ -8,6 +8,7 @@ STORAGE_KEY = f"{DOMAIN}_selections"
 TAPS_STORAGE_KEY = f"{DOMAIN}_taps"
 
 CONF_MAX_TAPS = "max_taps"
+CONF_TEMPERATURE_SENSOR_PREFIX = "temperature_sensor_hane"
 DEFAULT_MAX_TAPS = 2
 MIN_TAPS = 1
 MAX_SUPPORTED_TAPS = 8
