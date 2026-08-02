@@ -69,8 +69,18 @@ class TapCocktailCocktailSelect(
         cocktail_id = tap.get("cocktail")
 
         if isinstance(cocktail_id, str) and cocktail_id:
+            current_option = self.coordinator.get_cocktail_option(cocktail_id)
             saved_option = self._stored_option()
-            if saved_option and saved_option not in options:
+
+            # Only keep the stored label as a fallback while the cocktail is
+            # genuinely unavailable. If its icon or name changed, the current
+            # library label replaces the stale stored label instead of showing
+            # both options for the same cocktail.
+            if (
+                current_option is None
+                and saved_option
+                and saved_option not in options
+            ):
                 options.append(saved_option)
 
         return options
