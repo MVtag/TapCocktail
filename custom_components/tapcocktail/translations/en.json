@@ -24,8 +24,9 @@
       },
       "settings": {
         "title": "Antal haner",
-        "description": "Ændr antallet af aktive haner.",
+        "description": "Select the shared temperature sensor for the carbonation room, the number of active taps, and an optional temperature sensor for each tap.",
         "data": {
+          "carbonation_room_temperature_sensor": "Shared temperature sensor – carbonation room",
           "max_taps": "Antal aktive haner"
         }
       },
