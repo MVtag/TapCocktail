@@ -26,7 +26,7 @@
         "title": "Haneindstillinger",
         "description": "Vælg den fælles temperatursensor til karboneringsrummet, antal aktive haner og en valgfri temperatursensor til hver hane.",
         "data": {
-          "carbonation_room_temperature_sensor": "Fælles temperatursensor – karboneringsrum",
+          "carbonation_room_temperature_sensor": "Temperatursensor – karboneringsrum",
           "max_taps": "Antal aktive haner",
           "temperature_sensor_hane_1": "Temperatursensor – Hane 1",
           "temperature_sensor_hane_2": "Temperatursensor – Hane 2",
