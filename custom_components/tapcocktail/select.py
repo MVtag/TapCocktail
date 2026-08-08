@@ -3,13 +3,13 @@ from __future__ import annotations
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     CARBONATION_OPTIONS,
-    CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR,
     DOMAIN,
 )
 from .coordinator import TapCocktailCoordinator
@@ -23,9 +23,16 @@ async def async_setup_entry(
     """Set up TapCocktail select entities."""
     coordinator: TapCocktailCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities: list[SelectEntity] = [
-        TapCocktailCarbonationRoomTemperatureSelect(hass, entry),
-    ]
+    entity_registry = er.async_get(hass)
+    legacy_entity_id = entity_registry.async_get_entity_id(
+        "select",
+        DOMAIN,
+        "tapcocktail_carbonation_room_temperature_sensor",
+    )
+    if legacy_entity_id:
+        entity_registry.async_remove(legacy_entity_id)
+
+    entities: list[SelectEntity] = []
 
     for tap_number in range(1, coordinator.max_taps + 1):
         tap = str(tap_number)
@@ -38,72 +45,6 @@ async def async_setup_entry(
 
     async_add_entities(entities)
 
-
-class TapCocktailCarbonationRoomTemperatureSelect(SelectEntity):
-    """Select the shared temperature sensor for the carbonation room."""
-
-    _attr_icon = "mdi:thermometer-lines"
-    _attr_name = "Karboneringsrum Temperatursensor"
-    _attr_unique_id = "tapcocktail_carbonation_room_temperature_sensor"
-
-    def __init__(
-        self,
-        hass: HomeAssistant,
-        entry: ConfigEntry,
-    ) -> None:
-        self._hass = hass
-        self._entry = entry
-
-    @property
-    def options(self) -> list[str]:
-        """Return all available Home Assistant temperature sensors."""
-        sensor_options = sorted(
-            state.entity_id
-            for state in self._hass.states.async_all("sensor")
-            if state.attributes.get("device_class") == "temperature"
-        )
-
-        current = self._entry.options.get(
-            CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR
-        )
-        if (
-            isinstance(current, str)
-            and current
-            and current not in sensor_options
-        ):
-            sensor_options.append(current)
-
-        return ["Ingen"] + sensor_options
-
-    @property
-    def current_option(self) -> str:
-        """Return the selected shared carbonation-room sensor."""
-        current = self._entry.options.get(
-            CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR
-        )
-        return str(current) if current else "Ingen"
-
-    async def async_select_option(self, option: str) -> None:
-        """Save the shared carbonation-room temperature sensor."""
-        if option not in self.options:
-            return
-
-        new_options = dict(self._entry.options)
-        if option == "Ingen":
-            new_options.pop(
-                CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR,
-                None,
-            )
-        else:
-            new_options[
-                CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR
-            ] = option
-
-        self._hass.config_entries.async_update_entry(
-            self._entry,
-            options=new_options,
-        )
-        self.async_write_ha_state()
 
 
 class TapCocktailCocktailSelect(

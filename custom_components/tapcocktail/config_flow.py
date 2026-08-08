@@ -36,6 +36,7 @@ INGREDIENT_EXAMPLE = """Gin | 4 cl | 40 cl | 180 cl
 Mangopuré | 3 cl | 30 cl | 135 cl
 Limesaft | 2 cl | 20 cl | 90 cl"""
 from .const import (
+    CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR,
     CONF_MAX_TAPS,
     CONF_TEMPERATURE_SENSOR_PREFIX,
     DEFAULT_MAX_TAPS,
@@ -78,8 +79,28 @@ def _settings_schema(
     max_taps: int,
     options: dict[str, Any],
 ) -> vol.Schema:
-    """Return settings for active taps and their optional temperature sensors."""
+    """Return tap settings including the shared carbonation-room sensor."""
+    current_room_sensor = options.get(
+        CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR
+    )
+    room_sensor_marker = (
+        vol.Optional(
+            CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR,
+            default=current_room_sensor,
+        )
+        if current_room_sensor
+        else vol.Optional(CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR)
+    )
+
     fields: dict[Any, Any] = {
+        room_sensor_marker: selector(
+            {
+                "entity": {
+                    "domain": "sensor",
+                    "device_class": "temperature",
+                }
+            }
+        ),
         vol.Required(
             CONF_MAX_TAPS,
             default=max_taps,
@@ -309,6 +330,19 @@ class TapCocktailOptionsFlow(config_entries.OptionsFlow):
                     user_input[CONF_MAX_TAPS]
                 ),
             }
+
+            selected_room_sensor = user_input.get(
+                CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR
+            )
+            if selected_room_sensor:
+                new_options[
+                    CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR
+                ] = str(selected_room_sensor)
+            else:
+                new_options.pop(
+                    CONF_CARBONATION_ROOM_TEMPERATURE_SENSOR,
+                    None,
+                )
 
             for tap_number in range(1, current + 1):
                 key = _temperature_sensor_key(tap_number)
