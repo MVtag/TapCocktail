@@ -29,7 +29,7 @@ Create recipes in the Home Assistant UI, assign drinks to up to eight taps, cont
 - Restore tap selections and carbonation state after restarts
 - Danish and English translations
 - Sensors, selects and buttons for dashboards and automations
-- Optional [TapCocktail Card](https://github.com/MVtag/tapcocktail-card)
+- Bundled **TapCocktail Card** and **TapCocktail Library Card** (installed with the integration)
 - Optional LILYGO T-RGB 2.1-inch ESPHome tap display
 
 ## 🚰 Tap management
@@ -40,7 +40,7 @@ Each tap provides a drink selector, a 2/24/48-hour carbonation selector, start a
 
 Open **Settings → Devices & services → TapCocktail → Configure** to select an optional temperature sensor for each enabled tap. Every tap can use a different Home Assistant sensor. The selected sensor entity is exposed on that tap's TapCocktail sensor for compatible dashboards.
 
-With [TapCocktail Card v1.4.0 or newer](https://github.com/MVtag/tapcocktail-card), the card shows the measured and recommended temperatures together, for example **`4.2 / 3 °C`**. If no sensor is selected, or its state is unknown or unavailable, the card continues to show only the recommended temperature.
+The bundled TapCocktail Card shows the measured and recommended temperatures together, for example **`4.2 / 3 °C`**. If no sensor is selected, or its state is unknown or unavailable, the card continues to show only the recommended temperature.
 
 ## 📦 Installation
 
@@ -51,6 +51,7 @@ With [TapCocktail Card v1.4.0 or newer](https://github.com/MVtag/tapcocktail-car
 3. Download the integration.
 4. Restart Home Assistant.
 5. Open **Settings → Devices & services → Add integration** and select **TapCocktail**.
+6. TapCocktail registers its dashboard cards automatically when Lovelace resources use storage mode (the Home Assistant default). Refresh your browser after restarting Home Assistant.
 
 If TapCocktail is not listed in your HACS catalogue yet, add this repository as a custom **Integration** repository:
 
@@ -96,15 +97,54 @@ Shelf life supports:
 
 When a tap becomes ready, TapCocktail calculates time on tap, days remaining and whether the drink is fresh, near its recommended limit or overdue.
 
-## 📊 TapCocktail Card
+## 📊 Built-in TapCocktail dashboard cards
 
-Install [TapCocktail Card](https://github.com/MVtag/tapcocktail-card) for a visual Lovelace card with drink selection, carbonation controls, recipe view, animated bubbles, time on tap and green/orange/red shelf-life status.
+**TapCocktail Card** and **TapCocktail Library Card** are bundled with TapCocktail starting in **v2.7.0**. The integration serves both JavaScript files from `custom_components/tapcocktail/www/` and automatically registers the **single** JavaScript module resource in Home Assistant's default (storage) resource mode:
+
+```text
+/tapcocktail/tapcocktail-card.js?v=2.7.0
+```
+
+Both cards are contained in that module; you do **not** need a separate HACS Dashboard download. The resource version updates with future integration releases.
+
+Add a tap card using the dashboard editor or YAML:
 
 ```yaml
 type: custom:tapcocktail-card
 tap: 1
 name: Hane 1
 ```
+
+Add the library card to another dashboard view:
+
+```yaml
+type: custom:tapcocktail-library-card
+title: TapCocktail Bibliotek
+```
+
+The tap card supports drink selection, carbonation controls, recipe view, animated bubbles, time on tap, and shelf-life status. The Library Card manages cocktails, ingredients, and categories through the integration's WebSocket API (administrator account required).
+
+### Upgrading from the separate TapCocktail Card
+
+If you previously installed [TapCocktail Card](https://github.com/MVtag/tapcocktail-card) separately via HACS:
+
+1. Update the **TapCocktail integration** to v2.7.0 or later, then restart Home Assistant.
+2. Remove the separately installed **TapCocktail Card Dashboard** package from HACS. **Do not remove the TapCocktail integration.**
+3. Check **Settings → Dashboards → Resources** and remove any remaining legacy module resource (`/hacsfiles/tapcocktail-card/tapcocktail-card.js` or `/local/tapcocktail-card.js`), to prevent the old and new scripts from both being loaded.
+4. Confirm the new `/tapcocktail/tapcocktail-card.js?v=...` module is listed, refresh the browser, and keep your existing dashboard YAML unchanged.
+
+**For Lovelace YAML resource mode:** automatic resource registration is not possible because resources are read-only. Add the bundled module to the `lovelace:` resources section in `configuration.yaml` and restart/reload Lovelace resources:
+
+```yaml
+lovelace:
+  resource_mode: yaml
+  resources:
+    - url: /tapcocktail/tapcocktail-card.js?v=2.7.0
+      type: module
+```
+
+When updating TapCocktail in YAML mode, adjust the `v=` query parameter to match the installed integration version. Only the entry-point file is registered: it automatically imports `tapcocktail-card-core.js` from the same folder.
+
 
 ## 🖥️ LILYGO T-RGB ESPHome display
 
