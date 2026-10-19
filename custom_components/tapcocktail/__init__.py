@@ -1,6 +1,7 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
+from homeassistant.helpers.typing import ConfigType
 
 from .const import (
     CONF_MAX_TAPS,
@@ -11,7 +12,14 @@ from .const import (
     TAPS_STORAGE_KEY,
 )
 from .coordinator import TapCocktailCoordinator
+from .frontend import async_register_frontend
 from .websocket_api import async_register_websocket_api
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Register the bundled dashboard resource once per Home Assistant startup."""
+    await async_register_frontend(hass)
+    return True
 
 
 async def async_setup_entry(
